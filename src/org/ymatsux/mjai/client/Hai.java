@@ -157,4 +157,19 @@ public class Hai {
             return false;
         return true;
     }
+
+    public int getIndex() {
+        switch (type) {
+        case MANZU:
+            return kazu - 1;
+        case PINZU:
+            return 9 + (kazu - 1);
+        case SOZU:
+            return 18 + (kazu - 1);
+        case JIHAI:
+            return 27 + ji.ordinal();
+        default:
+            throw new IllegalStateException();
+        }
+    }
 }

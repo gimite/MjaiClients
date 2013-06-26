@@ -35,8 +35,8 @@ public class HaiTest {
     @Test
     public void testToString() {
         assertEquals("1m", new Hai(Hai.Type.MANZU, 1, null, false).toString());
-        assertEquals("4p", new Hai(Hai.Type.PINZU, 4, null, false).toString());
-        assertEquals("7s", new Hai(Hai.Type.SOZU, 7, null, false).toString());
+        assertEquals("5p", new Hai(Hai.Type.PINZU, 5, null, false).toString());
+        assertEquals("9s", new Hai(Hai.Type.SOZU, 9, null, false).toString());
 
         assertEquals("5pr", new Hai(Hai.Type.PINZU, 5, null, true).toString());
 
@@ -47,5 +47,22 @@ public class HaiTest {
         assertEquals("P", new Hai(Hai.Type.JIHAI, 0, Ji.HAKU, false).toString());
         assertEquals("F", new Hai(Hai.Type.JIHAI, 0, Ji.HATSU, false).toString());
         assertEquals("C", new Hai(Hai.Type.JIHAI, 0, Ji.CHUN, false).toString());
+    }
+
+    @Test
+    public void testGetIndex() {
+        assertEquals(0, new Hai(Hai.Type.MANZU, 1, null, false).getIndex());
+        assertEquals(8, new Hai(Hai.Type.MANZU, 9, null, false).getIndex());
+        assertEquals(9, new Hai(Hai.Type.PINZU, 1, null, false).getIndex());
+        assertEquals(17, new Hai(Hai.Type.PINZU, 9, null, false).getIndex());
+        assertEquals(18, new Hai(Hai.Type.SOZU, 1, null, false).getIndex());
+        assertEquals(26, new Hai(Hai.Type.SOZU, 9, null, false).getIndex());
+        assertEquals(27, new Hai(Hai.Type.JIHAI, 0, Ji.TON, false).getIndex());
+        assertEquals(28, new Hai(Hai.Type.JIHAI, 0, Ji.NAN, false).getIndex());
+        assertEquals(29, new Hai(Hai.Type.JIHAI, 0, Ji.SHA, false).getIndex());
+        assertEquals(30, new Hai(Hai.Type.JIHAI, 0, Ji.PE, false).getIndex());
+        assertEquals(31, new Hai(Hai.Type.JIHAI, 0, Ji.HAKU, false).getIndex());
+        assertEquals(32, new Hai(Hai.Type.JIHAI, 0, Ji.HATSU, false).getIndex());
+        assertEquals(33, new Hai(Hai.Type.JIHAI, 0, Ji.CHUN, false).getIndex());
     }
 }
