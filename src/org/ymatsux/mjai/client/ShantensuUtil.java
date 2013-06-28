@@ -14,6 +14,29 @@ public class ShantensuUtil {
     private static final int PINZU_SHUNTSU_START = 7;
     private static final int SOZU_SHUNTSU_START = 14;
     private static final int KOTSU_START = 21;
+    private static final int[][] MENTSUS;
+
+    static {
+        MENTSUS = new int[NUM_MENTSU][3];
+        for (int i = MANZU_SHUNTSU_START; i < PINZU_SHUNTSU_START; i++) {
+            MENTSUS[i][0] = i - MANZU_SHUNTSU_START + MANZU_START;
+            MENTSUS[i][1] = i - MANZU_SHUNTSU_START + MANZU_START + 1;
+            MENTSUS[i][2] = i - MANZU_SHUNTSU_START + MANZU_START + 2;
+        }
+        for (int i = PINZU_SHUNTSU_START; i < SOZU_SHUNTSU_START; i++) {
+            MENTSUS[i][0] = i - PINZU_SHUNTSU_START + PINZU_START;
+            MENTSUS[i][1] = i - PINZU_SHUNTSU_START + PINZU_START + 1;
+            MENTSUS[i][2] = i - PINZU_SHUNTSU_START + PINZU_START + 2;
+        }
+        for (int i = SOZU_SHUNTSU_START; i < KOTSU_START; i++) {
+            MENTSUS[i][0] = i - SOZU_SHUNTSU_START + SOZU_START;
+            MENTSUS[i][1] = i - SOZU_SHUNTSU_START + SOZU_START + 1;
+            MENTSUS[i][2] = i - SOZU_SHUNTSU_START + SOZU_START + 2;
+        }
+        for (int i = KOTSU_START; i < NUM_MENTSU; i++) {
+            MENTSUS[i][0] = MENTSUS[i][1] = MENTSUS[i][2] = i - KOTSU_START;
+        }
+    }
 
     public static int calculateShantensu(List<Hai> hais) {
         int[] countVector = new int[NUM_HAI];
@@ -44,8 +67,8 @@ public class ShantensuUtil {
             for (int haiIndex = 0; haiIndex < NUM_HAI; haiIndex++) {
                 targetVector[haiIndex] += 2;
                 if (isValidTargetVector(targetVector)) {
-                    int distance = calculateShantensuLowerBound(currentVector, targetVector);
-                    minShantensu = Math.min(distance, minShantensu);
+                    int shantensu = calculateShantensuLowerBound(currentVector, targetVector);
+                    minShantensu = Math.min(shantensu, minShantensu);
                 }
                 targetVector[haiIndex] -= 2;
             }
@@ -86,59 +109,15 @@ public class ShantensuUtil {
     }
 
     private static void addMentsu(int[] countVector, int mentsuIndex) {
-        if (mentsuIndex < 0 || NUM_MENTSU <= mentsuIndex) {
-            throw new IllegalArgumentException();
-        }
-        if (MANZU_SHUNTSU_START <= mentsuIndex && mentsuIndex < PINZU_SHUNTSU_START) {
-            // Manzu shuntsu
-            int startIndex = mentsuIndex - MANZU_SHUNTSU_START + MANZU_START;
-            countVector[startIndex]++;
-            countVector[startIndex + 1]++;
-            countVector[startIndex + 2]++;
-        } else if (PINZU_SHUNTSU_START <= mentsuIndex && mentsuIndex < SOZU_SHUNTSU_START) {
-            // Pinzu shuntsu
-            int startIndex = mentsuIndex - PINZU_SHUNTSU_START + PINZU_START;
-            countVector[startIndex]++;
-            countVector[startIndex + 1]++;
-            countVector[startIndex + 2]++;
-        } else if (SOZU_SHUNTSU_START <= mentsuIndex && mentsuIndex < KOTSU_START) {
-            // Sozu shuntsu
-            int startIndex = mentsuIndex - SOZU_SHUNTSU_START + SOZU_START;
-            countVector[startIndex]++;
-            countVector[startIndex + 1]++;
-            countVector[startIndex + 2]++;
-        } else {
-            // Kotsu
-            countVector[mentsuIndex - KOTSU_START] += 3;
-        }
+        countVector[MENTSUS[mentsuIndex][0]]++;
+        countVector[MENTSUS[mentsuIndex][1]]++;
+        countVector[MENTSUS[mentsuIndex][2]]++;
     }
 
     private static void removeMentsu(int[] countVector, int mentsuIndex) {
-        if (mentsuIndex < 0 || NUM_MENTSU <= mentsuIndex) {
-            throw new IllegalArgumentException();
-        }
-        if (MANZU_SHUNTSU_START <= mentsuIndex && mentsuIndex < PINZU_SHUNTSU_START) {
-            // Manzu shuntsu
-            int startIndex = mentsuIndex - MANZU_SHUNTSU_START + MANZU_START;
-            countVector[startIndex]--;
-            countVector[startIndex + 1]--;
-            countVector[startIndex + 2]--;
-        } else if (PINZU_SHUNTSU_START <= mentsuIndex && mentsuIndex < SOZU_SHUNTSU_START) {
-            // Pinzu shuntsu
-            int startIndex = mentsuIndex - PINZU_SHUNTSU_START + PINZU_START;
-            countVector[startIndex]--;
-            countVector[startIndex + 1]--;
-            countVector[startIndex + 2]--;
-        } else if (SOZU_SHUNTSU_START <= mentsuIndex && mentsuIndex < KOTSU_START) {
-            // Sozu shuntsu
-            int startIndex = mentsuIndex - SOZU_SHUNTSU_START + SOZU_START;
-            countVector[startIndex]--;
-            countVector[startIndex + 1]--;
-            countVector[startIndex + 2]--;
-        } else {
-            // Kotsu
-            countVector[mentsuIndex - KOTSU_START] -= 3;
-        }
+        countVector[MENTSUS[mentsuIndex][0]]--;
+        countVector[MENTSUS[mentsuIndex][1]]--;
+        countVector[MENTSUS[mentsuIndex][2]]--;
     }
 
     private ShantensuUtil() {
