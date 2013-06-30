@@ -38,7 +38,7 @@ public class TsumogiriClient {
                 ObjectNode joinMessage = objectMapper.createObjectNode();
                 joinMessage.put("type", "join");
                 joinMessage.put("name", "tsumogiri-java");
-                joinMessage.put("room", "manue-1kyoku");
+                joinMessage.put("room", Flags.get(Flags.ROOM));
                 sendMessage(joinMessage);
                 break;
             case "start_game":
