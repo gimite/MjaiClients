@@ -202,14 +202,22 @@ public class ShantensuRichiClient {
         } else {
             Collections.shuffle(alternatives);
             int sutehaiIndex = alternatives.get(0);
-            if (shantensu == 1 && numRemainingPipai >= 4 && !doneRichi) {
+            if (shantensu == 1 && numRemainingPipai >= 4 && !doneRichi && !isFuriten()) {
                 // The new shantensu is zero in this case. Then the player can do richi.
-                // TODO: Add furiten check.
                 return new TsumoAction(sutehaiIndex, true);
             } else {
                 return new TsumoAction(sutehaiIndex, false);
             }
         }
+    }
+
+    private boolean isFuriten() {
+        for (Hai sutehai : sutehais) {
+            if (isHora(sutehai)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void sendMessage(JsonNode json) {
