@@ -158,6 +158,16 @@ public class Hai {
         return true;
     }
 
+    public boolean equalsIgnoreAkahai(Hai other) {
+        if (ji != other.ji)
+            return false;
+        if (kazu != other.kazu)
+            return false;
+        if (type != other.type)
+            return false;
+        return true;
+    }
+
     public int getIndex() {
         switch (type) {
         case MANZU:

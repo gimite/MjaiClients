@@ -30,6 +30,9 @@ public class TsumogiriClient {
     public void run() throws IOException {
         while (true) {
             String line = reader.readLine();
+            if (line == null) {
+                break;
+            }
             System.out.println("<-  " + line);
             JsonNode inputJson = objectMapper.readTree(line);
             String type = inputJson.get("type").asText();
@@ -59,9 +62,11 @@ public class TsumogiriClient {
                 }
                 break;
             case "end_game":
+                sendNone();
                 return;
             case "error":
-                return;
+                sendNone();
+                break;
             default:
                 sendNone();
             }

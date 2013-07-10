@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class ShantensuClient {
+public class ShantensuRichiClient {
 
     private static final int INITIAL_TEHAI_SIZE = 13;
 
@@ -24,8 +24,11 @@ public class ShantensuClient {
     private final ObjectMapper objectMapper;
     private int id = -1;
     private List<Hai> tehais;
+    private List<Hai> sutehais;
+    private boolean doneRichi;
+    private int numRemainingPipai;
 
-    public ShantensuClient(Socket socket) throws IOException {
+    public ShantensuRichiClient(Socket socket) throws IOException {
         reader = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));
         writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
@@ -46,7 +49,7 @@ public class ShantensuClient {
             case "hello":
                 ObjectNode joinMessage = objectMapper.createObjectNode();
                 joinMessage.put("type", "join");
-                joinMessage.put("name", "shantensu-java");
+                joinMessage.put("name", "shantensu-richi-java");
                 joinMessage.put("room", Flags.get(Flags.ROOM));
                 sendMessage(joinMessage);
                 break;
@@ -55,6 +58,9 @@ public class ShantensuClient {
                 sendNone();
                 break;
             case "start_kyoku":
+                sutehais = new ArrayList<Hai>();
+                doneRichi = false;
+                numRemainingPipai = 70;
                 JsonNode tehaisJson = inputJson.get("tehais");
                 tehais = new ArrayList<Hai>();
                 for (int i = 0; i < INITIAL_TEHAI_SIZE; i++) {
@@ -63,6 +69,8 @@ public class ShantensuClient {
                 sendNone();
                 break;
             case "tsumo":
+            {
+                numRemainingPipai--;
                 int actorId = inputJson.get("actor").asInt();
                 if (actorId == id) {
                     Hai tsumohai = Hai.parse(inputJson.get("pai").asText());
@@ -71,6 +79,32 @@ public class ShantensuClient {
                     sendNone();
                 }
                 break;
+            }
+            case "dahai":
+            {
+                int actorId = inputJson.get("actor").asInt();
+                if (actorId != id) {
+                    if (doneRichi) {
+                        Hai sutehai = Hai.parse(inputJson.get("pai").asText());
+                        // TODO: Add furiten check.
+                        if (isHora(sutehai)) {
+                            ObjectNode horaMessage = objectMapper.createObjectNode();
+                            horaMessage.put("type", "hora");
+                            horaMessage.put("actor", id);
+                            horaMessage.put("target", actorId);
+                            horaMessage.put("pai", sutehai.toString());
+                            sendMessage(horaMessage);
+                        } else {
+                            sendNone();
+                        }
+                    } else {
+                        sendNone();
+                    }
+                } else {
+                    sendNone();
+                }
+                break;
+            }
             case "end_game":
                 sendNone();
                 return;
@@ -83,7 +117,7 @@ public class ShantensuClient {
         }
     }
 
-    private void processTsumo(Hai tsumohai) {
+    private void processTsumo(Hai tsumohai) throws IOException {
         if (isHora(tsumohai)) {
             ObjectNode horaMessage = objectMapper.createObjectNode();
             horaMessage.put("type", "hora");
@@ -94,7 +128,21 @@ public class ShantensuClient {
             return;
         }
 
-        int sutehaiIndex = chooseSutehai(tsumohai);
+        TsumoAction tsumoAction = chooseTsumoAction(tsumohai);
+
+        if (tsumoAction.doRichi) {
+            // Do richi
+            ObjectNode richiMessage = objectMapper.createObjectNode();
+            richiMessage.put("type", "reach");
+            richiMessage.put("actor", id);
+            sendMessage(richiMessage);
+            doneRichi = true;
+            // Read the richi message.
+            String richiLine = reader.readLine();
+            System.out.println("<-  " + richiLine);
+        }
+
+        int sutehaiIndex = tsumoAction.sutehaiIndex;
 
         ObjectNode dahaiMessage = objectMapper.createObjectNode();
         dahaiMessage.put("type", "dahai");
@@ -102,9 +150,11 @@ public class ShantensuClient {
         if (sutehaiIndex < 0) {
             dahaiMessage.put("pai", tsumohai.toString());
             dahaiMessage.put("tsumogiri", true);
+            sutehais.add(tsumohai);
         } else {
             dahaiMessage.put("pai", tehais.get(sutehaiIndex).toString());
             dahaiMessage.put("tsumogiri", false);
+            sutehais.add(tehais.get(sutehaiIndex));
         }
 
         sendMessage(dahaiMessage);
@@ -125,7 +175,17 @@ public class ShantensuClient {
         return HoraUtil.isHora(tehaisWithTsumohai);
     }
 
-    private int chooseSutehai(Hai tsumohai) {
+    private static class TsumoAction {
+        public int sutehaiIndex;
+        public boolean doRichi;
+
+        public TsumoAction(int sutehaiIndex, boolean doRichi) {
+            this.sutehaiIndex = sutehaiIndex;
+            this.doRichi = doRichi;
+        }
+    }
+
+    private TsumoAction chooseTsumoAction(Hai tsumohai) {
         int shantensu = ShantensuUtil.calculateShantensu(tehais);
         List<Integer> alternatives = new ArrayList<Integer>();
         for (int i = 0; i < tehais.size(); i++) {
@@ -138,10 +198,17 @@ public class ShantensuClient {
         }
 
         if (alternatives.isEmpty()) {
-            return -1;
+            return new TsumoAction(-1, false);
         } else {
             Collections.shuffle(alternatives);
-            return alternatives.get(0);
+            int sutehaiIndex = alternatives.get(0);
+            if (shantensu == 1 && numRemainingPipai >= 4 && !doneRichi) {
+                // The new shantensu is zero in this case. Then the player can do richi.
+                // TODO: Add furiten check.
+                return new TsumoAction(sutehaiIndex, true);
+            } else {
+                return new TsumoAction(sutehaiIndex, false);
+            }
         }
     }
 
