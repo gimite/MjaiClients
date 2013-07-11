@@ -6,19 +6,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ShantensuRichiClient extends BaseMjaiClient {
+public class YmatsuxClient extends BaseMjaiClient {
 
-    public ShantensuRichiClient(Socket socket) throws IOException {
+    public YmatsuxClient(Socket socket) throws IOException {
         super(socket);
     }
 
     @Override
-    public String getClientName() {
-        return "shantensu-richi-java";
-    }
-
-    @Override
-    protected final void processSelfTsumo(Hai tsumohai) {
+    protected void processSelfTsumo(Hai tsumohai) {
         if (HoraUtil.isHora(tehais, tsumohai)) {
             doTsumoho(tsumohai);
             return;
@@ -75,5 +70,10 @@ public class ShantensuRichiClient extends BaseMjaiClient {
         } else {
             sendNone();
         }
+    }
+
+    @Override
+    protected String getClientName() {
+        return "ymatsux";
     }
 }

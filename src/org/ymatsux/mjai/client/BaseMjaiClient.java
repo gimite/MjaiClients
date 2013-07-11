@@ -24,6 +24,9 @@ public abstract class BaseMjaiClient implements MjaiClient {
     private final ObjectMapper objectMapper;
 
     protected int id = -1;
+    protected int oyaId = -1;
+    protected Hai bakaze;
+    protected Hai jikaze;
     protected List<Hai> tehais;
     protected List<Hai> sutehais;
     protected boolean doneRichi;
@@ -111,6 +114,9 @@ public abstract class BaseMjaiClient implements MjaiClient {
         sutehais = new ArrayList<Hai>();
         doneRichi = false;
         numRemainingPipai = INITIAL_NUM_REMAINING_PIPAI;
+        bakaze = Hai.parse(inputJson.get("bakaze").asText());
+        oyaId = inputJson.get("oya").asInt();
+        jikaze = Hai.parse(new String[] { "E", "S", "W", "N" }[(id - oyaId + 4) % 4]);
         JsonNode tehaisJson = inputJson.get("tehais");
         tehais = new ArrayList<Hai>();
         for (int i = 0; i < INITIAL_TEHAI_SIZE; i++) {

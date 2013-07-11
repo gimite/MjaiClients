@@ -23,6 +23,8 @@ public class YmatsuxMjaiClientsMain {
             return new ShantensuClient(socket);
         case "shantensu-richi-java":
             return new ShantensuRichiClient(socket);
+        case "ymatsux":
+            return new YmatsuxClient(socket);
         default:
             throw new IllegalArgumentException("Unknown client name: " + clientName);
         }
