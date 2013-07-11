@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class TsumogiriClient {
+public class TsumogiriClient implements MjaiClient {
 
     private final BufferedReader reader;
     private final PrintWriter writer;
@@ -27,11 +27,21 @@ public class TsumogiriClient {
         objectMapper = new ObjectMapper();
     }
 
-    public void run() throws IOException {
+    @Override
+    public void run() {
+        try {
+            runInternal();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    private void runInternal() throws IOException {
         while (true) {
             String line = reader.readLine();
             if (line == null) {
-                break;
+                continue;
             }
             System.out.println("<-  " + line);
             JsonNode inputJson = objectMapper.readTree(line);

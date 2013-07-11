@@ -33,6 +33,5 @@ public class Flags {
     public static final Flag SERVER = new Flag("server", "localhost");
     public static final Flag PORT = new Flag("port", "11600");
     public static final Flag ROOM = new Flag("room", "default");
-    public static final Flag GAMES = new Flag("games", "1");
     public static final Flag CLIENT = new Flag("client", "shantensu-richi-java");
 }
