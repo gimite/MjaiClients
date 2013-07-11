@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 
 public class YmatsuxMjaiClientsMain {
     public static void main(String[] args) throws UnknownHostException, IOException {
+        Flags.parse(args);
         String clientName = Flags.CLIENT.getValue();
         Socket socket = new Socket(
                 Flags.SERVER.getValue(), Integer.parseInt(Flags.PORT.getValue()));
