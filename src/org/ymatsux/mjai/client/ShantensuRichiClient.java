@@ -60,7 +60,7 @@ public class ShantensuRichiClient implements MjaiClient{
                 ObjectNode joinMessage = objectMapper.createObjectNode();
                 joinMessage.put("type", "join");
                 joinMessage.put("name", "shantensu-richi-java");
-                joinMessage.put("room", Flags.get(Flags.ROOM));
+                joinMessage.put("room", Flags.ROOM.getValue());
                 sendMessage(joinMessage);
                 break;
             case "start_game":

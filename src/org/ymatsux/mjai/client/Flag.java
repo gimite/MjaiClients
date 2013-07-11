@@ -17,4 +17,8 @@ public class Flag {
     public String getDefaultValue() {
         return defaultValue;
     }
+
+    public String getValue() {
+        return Flags.get(this);
+    }
 }
