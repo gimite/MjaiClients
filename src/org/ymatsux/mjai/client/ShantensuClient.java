@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 public class ShantensuClient extends BaseMjaiClient {
 
     public ShantensuClient(Socket socket) throws IOException {
@@ -22,33 +20,12 @@ public class ShantensuClient extends BaseMjaiClient {
     @Override
     protected final void processSelfTsumo(Hai tsumohai) {
         if (isHora(tsumohai)) {
-            ObjectNode horaMessage = objectMapper.createObjectNode();
-            horaMessage.put("type", "hora");
-            horaMessage.put("actor", id);
-            horaMessage.put("target", id);
-            horaMessage.put("pai", tsumohai.toString());
-            sendMessage(horaMessage);
+            doTsumoho(tsumohai);
             return;
         }
 
         int sutehaiIndex = chooseSutehai(tsumohai);
-
-        ObjectNode dahaiMessage = objectMapper.createObjectNode();
-        dahaiMessage.put("type", "dahai");
-        dahaiMessage.put("actor", id);
-        if (sutehaiIndex < 0) {
-            dahaiMessage.put("pai", tsumohai.toString());
-            dahaiMessage.put("tsumogiri", true);
-        } else {
-            dahaiMessage.put("pai", tehais.get(sutehaiIndex).toString());
-            dahaiMessage.put("tsumogiri", false);
-        }
-
-        sendMessage(dahaiMessage);
-
-        if (sutehaiIndex >= 0) {
-            tehais.set(sutehaiIndex, tsumohai);
-        }
+        doDahai(tsumohai, sutehaiIndex, false);
     }
 
     private boolean isHora(Hai tsumohai) {

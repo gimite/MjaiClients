@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 public class ShantensuRichiClient extends BaseMjaiClient{
 
     public ShantensuRichiClient(Socket socket) throws IOException {
@@ -22,48 +20,12 @@ public class ShantensuRichiClient extends BaseMjaiClient{
     @Override
     protected final void processSelfTsumo(Hai tsumohai) {
         if (isHora(tsumohai)) {
-            ObjectNode horaMessage = objectMapper.createObjectNode();
-            horaMessage.put("type", "hora");
-            horaMessage.put("actor", id);
-            horaMessage.put("target", id);
-            horaMessage.put("pai", tsumohai.toString());
-            sendMessage(horaMessage);
+            doTsumoho(tsumohai);
             return;
         }
 
-        TsumoAction tsumoAction = chooseTsumoAction(tsumohai);
-
-        if (tsumoAction.doRichi) {
-            // Do richi
-            ObjectNode richiMessage = objectMapper.createObjectNode();
-            richiMessage.put("type", "reach");
-            richiMessage.put("actor", id);
-            sendMessage(richiMessage);
-            doneRichi = true;
-            // Read the richi message.
-            readMessage();
-        }
-
-        int sutehaiIndex = tsumoAction.sutehaiIndex;
-
-        ObjectNode dahaiMessage = objectMapper.createObjectNode();
-        dahaiMessage.put("type", "dahai");
-        dahaiMessage.put("actor", id);
-        if (sutehaiIndex < 0) {
-            dahaiMessage.put("pai", tsumohai.toString());
-            dahaiMessage.put("tsumogiri", true);
-            sutehais.add(tsumohai);
-        } else {
-            dahaiMessage.put("pai", tehais.get(sutehaiIndex).toString());
-            dahaiMessage.put("tsumogiri", false);
-            sutehais.add(tehais.get(sutehaiIndex));
-        }
-
-        sendMessage(dahaiMessage);
-
-        if (sutehaiIndex >= 0) {
-            tehais.set(sutehaiIndex, tsumohai);
-        }
+        DahaiAction tsumoAction = chooseDahaiAction(tsumohai);
+        doDahai(tsumohai, tsumoAction.sutehaiIndex, tsumoAction.doRichi);
     }
 
     private boolean isHora(Hai tsumohai) {
@@ -77,17 +39,17 @@ public class ShantensuRichiClient extends BaseMjaiClient{
         return HoraUtil.isHora(tehaisWithTsumohai);
     }
 
-    private static class TsumoAction {
+    private static class DahaiAction {
         public int sutehaiIndex;
         public boolean doRichi;
 
-        public TsumoAction(int sutehaiIndex, boolean doRichi) {
+        public DahaiAction(int sutehaiIndex, boolean doRichi) {
             this.sutehaiIndex = sutehaiIndex;
             this.doRichi = doRichi;
         }
     }
 
-    private TsumoAction chooseTsumoAction(Hai tsumohai) {
+    private DahaiAction chooseDahaiAction(Hai tsumohai) {
         int shantensu = ShantensuUtil.calculateShantensu(tehais);
         List<Integer> alternatives = new ArrayList<Integer>();
         for (int i = 0; i < tehais.size(); i++) {
@@ -100,15 +62,15 @@ public class ShantensuRichiClient extends BaseMjaiClient{
         }
 
         if (alternatives.isEmpty()) {
-            return new TsumoAction(-1, false);
+            return new DahaiAction(-1, false);
         } else {
             Collections.shuffle(alternatives);
             int sutehaiIndex = alternatives.get(0);
             if (shantensu == 1 && numRemainingPipai >= 4 && !doneRichi && !isFuriten()) {
                 // The new shantensu is zero in this case. Then the player can do richi.
-                return new TsumoAction(sutehaiIndex, true);
+                return new DahaiAction(sutehaiIndex, true);
             } else {
-                return new TsumoAction(sutehaiIndex, false);
+                return new DahaiAction(sutehaiIndex, false);
             }
         }
     }
@@ -128,12 +90,7 @@ public class ShantensuRichiClient extends BaseMjaiClient{
             // This client never does furiten-richi. Thus we can assume that this ronho is not
             // furiten.
             if (isHora(sutehai)) {
-                ObjectNode horaMessage = objectMapper.createObjectNode();
-                horaMessage.put("type", "hora");
-                horaMessage.put("actor", id);
-                horaMessage.put("target", actorId);
-                horaMessage.put("pai", sutehai.toString());
-                sendMessage(horaMessage);
+                doRonho(actorId, sutehai);
             } else {
                 sendNone();
             }

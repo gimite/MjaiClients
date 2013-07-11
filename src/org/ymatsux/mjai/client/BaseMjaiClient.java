@@ -19,11 +19,11 @@ public abstract class BaseMjaiClient implements MjaiClient {
     protected static final int INITIAL_TEHAI_SIZE = 13;
     protected static final int INITIAL_NUM_REMAINING_PIPAI = 70;
 
-    protected final BufferedReader reader;
-    protected final PrintWriter writer;
-    protected final ObjectMapper objectMapper;
-    protected int id = -1;
+    private final BufferedReader reader;
+    private final PrintWriter writer;
+    private final ObjectMapper objectMapper;
 
+    protected int id = -1;
     protected List<Hai> tehais;
     protected List<Hai> sutehais;
     protected boolean doneRichi;
@@ -121,7 +121,7 @@ public abstract class BaseMjaiClient implements MjaiClient {
 
     abstract protected String getClientName();
 
-    protected final JsonNode readMessage() {
+    private JsonNode readMessage() {
         try {
             String line = reader.readLine();
             if (Boolean.parseBoolean(Flags.DEBUG_OUTPUT_JSON.getValue())) {
@@ -133,7 +133,7 @@ public abstract class BaseMjaiClient implements MjaiClient {
         }
     }
 
-    protected final void sendMessage(JsonNode json) {
+    private void sendMessage(JsonNode json) {
         if (Boolean.parseBoolean(Flags.DEBUG_OUTPUT_JSON.getValue())) {
             System.out.println("->  " + json.toString());
         }
@@ -145,5 +145,55 @@ public abstract class BaseMjaiClient implements MjaiClient {
         ObjectNode json = objectMapper.createObjectNode();
         json.put("type", "none");
         sendMessage(json);
+    }
+
+    protected final void doTsumoho(Hai tsumohai) {
+        ObjectNode horaMessage = objectMapper.createObjectNode();
+        horaMessage.put("type", "hora");
+        horaMessage.put("actor", id);
+        horaMessage.put("target", id);
+        horaMessage.put("pai", tsumohai.toString());
+        sendMessage(horaMessage);
+    }
+
+    protected final void doDahai(Hai tsumohai, int sutehaiIndex, boolean doRichi) {
+        if (doRichi) {
+            ObjectNode richiMessage = objectMapper.createObjectNode();
+            richiMessage.put("type", "reach");
+            richiMessage.put("actor", id);
+            sendMessage(richiMessage);
+
+            // Update the internal state.
+            doneRichi = true;
+
+            // Read the richi message.
+            readMessage();
+        }
+
+        ObjectNode dahaiMessage = objectMapper.createObjectNode();
+        dahaiMessage.put("type", "dahai");
+        dahaiMessage.put("actor", id);
+        if (sutehaiIndex < 0) {
+            dahaiMessage.put("pai", tsumohai.toString());
+            dahaiMessage.put("tsumogiri", true);
+        } else {
+            dahaiMessage.put("pai", tehais.get(sutehaiIndex).toString());
+            dahaiMessage.put("tsumogiri", false);
+        }
+        sendMessage(dahaiMessage);
+
+        // Update the internal state.
+        if (sutehaiIndex >= 0) {
+            tehais.set(sutehaiIndex, tsumohai);
+        }
+    }
+
+    protected final void doRonho(int targetId, Hai sutehai) {
+        ObjectNode horaMessage = objectMapper.createObjectNode();
+        horaMessage.put("type", "hora");
+        horaMessage.put("actor", id);
+        horaMessage.put("target", targetId);
+        horaMessage.put("pai", sutehai.toString());
+        sendMessage(horaMessage);
     }
 }
