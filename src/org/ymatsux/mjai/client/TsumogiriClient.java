@@ -40,7 +40,9 @@ public class TsumogiriClient implements MjaiClient {
     private void runInternal() throws IOException {
         while (true) {
             String line = reader.readLine();
-            System.out.println("<-  " + line);
+            if (Boolean.parseBoolean(Flags.DEBUG_OUTPUT_JSON.getValue())) {
+                System.out.println("<-  " + line);
+            }
             JsonNode inputJson = objectMapper.readTree(line);
             String type = inputJson.get("type").asText();
             switch (type) {
@@ -81,7 +83,9 @@ public class TsumogiriClient implements MjaiClient {
     }
 
     private void sendMessage(JsonNode json) {
-        System.out.println("->  " + json.toString());
+        if (Boolean.parseBoolean(Flags.DEBUG_OUTPUT_JSON.getValue())) {
+            System.out.println("->  " + json.toString());
+        }
         writer.println(json.toString());
         writer.flush();
     }
