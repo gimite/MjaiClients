@@ -74,8 +74,7 @@ public class TsumogiriClient implements MjaiClient {
                 sendNone();
                 return;
             case "error":
-                sendNone();
-                break;
+                return;
             default:
                 sendNone();
             }
