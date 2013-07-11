@@ -19,24 +19,13 @@ public class ShantensuClient extends BaseMjaiClient {
 
     @Override
     protected final void processSelfTsumo(Hai tsumohai) {
-        if (isHora(tsumohai)) {
+        if (HoraUtil.isHora(tehais, tsumohai)) {
             doTsumoho(tsumohai);
             return;
         }
 
         int sutehaiIndex = chooseSutehai(tsumohai);
         doDahai(tsumohai, sutehaiIndex, false);
-    }
-
-    private boolean isHora(Hai tsumohai) {
-        if (ShantensuUtil.calculateShantensu(tehais) > 0) {
-            return false;
-        }
-
-        List<Hai> tehaisWithTsumohai = new ArrayList<Hai>(tehais);
-        tehaisWithTsumohai.add(tsumohai);
-
-        return HoraUtil.isHora(tehaisWithTsumohai);
     }
 
     private int chooseSutehai(Hai tsumohai) {

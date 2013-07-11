@@ -19,24 +19,13 @@ public class ShantensuRichiClient extends BaseMjaiClient{
 
     @Override
     protected final void processSelfTsumo(Hai tsumohai) {
-        if (isHora(tsumohai)) {
+        if (HoraUtil.isHora(tehais, tsumohai)) {
             doTsumoho(tsumohai);
             return;
         }
 
         DahaiAction tsumoAction = chooseDahaiAction(tsumohai);
         doDahai(tsumohai, tsumoAction.sutehaiIndex, tsumoAction.doRichi);
-    }
-
-    private boolean isHora(Hai tsumohai) {
-        if (ShantensuUtil.calculateShantensu(tehais) > 0) {
-            return false;
-        }
-
-        List<Hai> tehaisWithTsumohai = new ArrayList<Hai>(tehais);
-        tehaisWithTsumohai.add(tsumohai);
-
-        return HoraUtil.isHora(tehaisWithTsumohai);
     }
 
     private static class DahaiAction {
@@ -75,21 +64,10 @@ public class ShantensuRichiClient extends BaseMjaiClient{
         }
     }
 
-    private boolean isFuriten() {
-        for (Hai sutehai : sutehais) {
-            if (isHora(sutehai)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     protected void processOthersDahai(int actorId, Hai sutehai) {
         if (doneRichi) {
-            // This client never does furiten-richi. Thus we can assume that this ronho is not
-            // furiten.
-            if (isHora(sutehai)) {
+            if (HoraUtil.isHora(tehais, sutehai) && !isFuriten()) {
                 doRonho(actorId, sutehai);
             } else {
                 sendNone();

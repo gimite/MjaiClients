@@ -196,4 +196,13 @@ public abstract class BaseMjaiClient implements MjaiClient {
         horaMessage.put("pai", sutehai.toString());
         sendMessage(horaMessage);
     }
+
+    protected final boolean isFuriten() {
+        for (Hai sutehai : sutehais) {
+            if (HoraUtil.isHora(tehais, sutehai)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

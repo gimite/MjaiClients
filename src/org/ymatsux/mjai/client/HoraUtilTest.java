@@ -35,5 +35,12 @@ public class HoraUtilTest {
                 "1m,1m,1m,1m,2m,2m,2m,2m,3m,3m,3m,3m,E,E")));
         assertFalse(HoraUtil.isHora(readHaiList(
                 "1m,1m,1m,1m,2m,2m,2m,2m,4m,4m,4m,4m,E,E")));
+
+        assertTrue(HoraUtil.isHora(
+                readHaiList("1m,1m,1m,1m,2m,2m,2m,3m,3m,3m,3m,E,E"),
+                Hai.parse("2m")));
+        assertFalse(HoraUtil.isHora(
+                readHaiList("1m,1m,1m,1m,2m,2m,2m,3m,3m,3m,3m,E,E"),
+                Hai.parse("W")));
     }
 }

@@ -1,5 +1,6 @@
 package org.ymatsux.mjai.client;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +19,12 @@ public class HoraUtil {
         }
         // TODO: Handle Kokushimuso.
         return isHoraInternal(countVector, new int[NUM_HAI], 4, 0);
+    }
+
+    public static boolean isHora(List<Hai> tehais, Hai agarihai) {
+        List<Hai> hais = new ArrayList<Hai>(tehais);
+        hais.add(agarihai);
+        return isHora(hais);
     }
 
     private static boolean isHoraInternal(
