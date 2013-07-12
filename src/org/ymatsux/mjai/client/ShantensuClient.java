@@ -19,7 +19,7 @@ public class ShantensuClient extends BaseMjaiClient {
 
     @Override
     protected final void processSelfTsumo(Hai tsumohai) {
-        if (HoraUtil.isHora(tehais, tsumohai)) {
+        if (HoraUtil.isHoraIgnoreYaku(tehais, tsumohai)) {
             doTsumoho(tsumohai);
             return;
         }

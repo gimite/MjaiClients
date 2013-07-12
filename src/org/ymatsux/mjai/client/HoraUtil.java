@@ -9,7 +9,7 @@ public class HoraUtil {
     private static final int NUM_HAI = 34;
     private static final int NUM_MENTSU = 55;
 
-    public static boolean isHora(List<Hai> hais) {
+    public static boolean isHoraIgnoreYaku(List<Hai> hais) {
         int[] countVector = new int[NUM_HAI];
         for (Hai hai : hais) {
             countVector[hai.getIndex()]++;
@@ -18,16 +18,16 @@ public class HoraUtil {
             return true;
         }
         // TODO: Handle Kokushimuso.
-        return isHoraInternal(countVector, new int[NUM_HAI], 4, 0);
+        return isHoraIgnoreYakuInternal(countVector, new int[NUM_HAI], 4, 0);
     }
 
-    public static boolean isHora(List<Hai> tehais, Hai agarihai) {
+    public static boolean isHoraIgnoreYaku(List<Hai> tehais, Hai agarihai) {
         List<Hai> hais = new ArrayList<Hai>(tehais);
         hais.add(agarihai);
-        return isHora(hais);
+        return isHoraIgnoreYaku(hais);
     }
 
-    private static boolean isHoraInternal(
+    private static boolean isHoraIgnoreYakuInternal(
             int[] currentVector, int[] targetVector, int leftMentsu,
             int minMentsuIndex) {
         if (leftMentsu == 0) {
@@ -52,7 +52,7 @@ public class HoraUtil {
                 }
             }
             if (isValid) {
-                boolean isHora = isHoraInternal(
+                boolean isHora = isHoraIgnoreYakuInternal(
                         currentVector, targetVector, leftMentsu - 1, mentsuIndex);
                 if (isHora) {
                     return true;

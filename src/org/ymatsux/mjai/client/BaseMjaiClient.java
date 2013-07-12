@@ -205,7 +205,7 @@ public abstract class BaseMjaiClient implements MjaiClient {
 
     protected final boolean isFuriten() {
         for (Hai sutehai : sutehais) {
-            if (HoraUtil.isHora(tehais, sutehai)) {
+            if (HoraUtil.isHoraIgnoreYaku(tehais, sutehai)) {
                 return true;
             }
         }

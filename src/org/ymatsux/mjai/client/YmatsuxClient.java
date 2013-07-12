@@ -14,7 +14,7 @@ public class YmatsuxClient extends BaseMjaiClient {
 
     @Override
     protected void processSelfTsumo(Hai tsumohai) {
-        if (HoraUtil.isHora(tehais, tsumohai)) {
+        if (HoraUtil.isHoraIgnoreYaku(tehais, tsumohai)) {
             doTsumoho(tsumohai);
             return;
         }
@@ -62,7 +62,7 @@ public class YmatsuxClient extends BaseMjaiClient {
     @Override
     protected void processOthersDahai(int actorId, Hai sutehai) {
         if (doneRichi) {
-            if (HoraUtil.isHora(tehais, sutehai) && !isFuriten()) {
+            if (HoraUtil.isHoraIgnoreYaku(tehais, sutehai) && !isFuriten()) {
                 doRonho(actorId, sutehai);
             } else {
                 sendNone();
