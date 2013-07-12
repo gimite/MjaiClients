@@ -182,4 +182,17 @@ public class Hai {
             throw new IllegalStateException();
         }
     }
+
+    public static Hai ofIndex(int index) {
+        if (0 <= index && index < 9) {
+            return new Hai(Type.MANZU, index + 1, null, false);
+        } else if (9 <= index && index < 18) {
+            return new Hai(Type.PINZU, index - 8, null, false);
+        } else if (18 <= index && index < 27) {
+            return new Hai(Type.SOZU, index - 17, null, false);
+        } else if (27 <= index && index < 34) {
+            return new Hai(Type.JIHAI, 0, Ji.values()[index - 27], false);
+        }
+        throw new IllegalArgumentException();
+    }
 }
