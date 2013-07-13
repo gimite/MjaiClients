@@ -10,7 +10,7 @@ public class ShantensuUtil {
     public static int calculateShantensu(List<Hai> hais) {
         int[] countVector = new int[NUM_HAI];
         for (Hai hai : hais) {
-            countVector[hai.getIndex()]++;
+            countVector[hai.getId()]++;
         }
         int chitoitsuShantensu = calculateChitoitsuShantensu(countVector);
         // TODO: Handle Kokushimuso

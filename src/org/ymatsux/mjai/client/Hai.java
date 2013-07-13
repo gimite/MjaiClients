@@ -168,7 +168,8 @@ public class Hai {
         return true;
     }
 
-    public int getIndex() {
+    // NOTE: Akahai is ignored in the id.
+    public int getId() {
         switch (type) {
         case MANZU:
             return kazu - 1;
@@ -183,15 +184,15 @@ public class Hai {
         }
     }
 
-    public static Hai ofIndex(int index) {
-        if (0 <= index && index < 9) {
-            return new Hai(Type.MANZU, index + 1, null, false);
-        } else if (9 <= index && index < 18) {
-            return new Hai(Type.PINZU, index - 8, null, false);
-        } else if (18 <= index && index < 27) {
-            return new Hai(Type.SOZU, index - 17, null, false);
-        } else if (27 <= index && index < 34) {
-            return new Hai(Type.JIHAI, 0, Ji.values()[index - 27], false);
+    public static Hai ofId(int id) {
+        if (0 <= id && id < 9) {
+            return new Hai(Type.MANZU, id + 1, null, false);
+        } else if (9 <= id && id < 18) {
+            return new Hai(Type.PINZU, id - 8, null, false);
+        } else if (18 <= id && id < 27) {
+            return new Hai(Type.SOZU, id - 17, null, false);
+        } else if (27 <= id && id < 34) {
+            return new Hai(Type.JIHAI, 0, Ji.values()[id - 27], false);
         }
         throw new IllegalArgumentException();
     }

@@ -12,7 +12,7 @@ public class HoraUtil {
     public static boolean isHoraIgnoreYaku(List<Hai> hais) {
         int[] countVector = new int[NUM_HAI];
         for (Hai hai : hais) {
-            countVector[hai.getIndex()]++;
+            countVector[hai.getId()]++;
         }
         if (isChitoitsu(countVector)) {
             return true;

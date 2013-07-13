@@ -50,36 +50,36 @@ public class HaiTest {
     }
 
     @Test
-    public void testGetIndex() {
-        assertEquals(0, new Hai(Hai.Type.MANZU, 1, null, false).getIndex());
-        assertEquals(8, new Hai(Hai.Type.MANZU, 9, null, false).getIndex());
-        assertEquals(9, new Hai(Hai.Type.PINZU, 1, null, false).getIndex());
-        assertEquals(17, new Hai(Hai.Type.PINZU, 9, null, false).getIndex());
-        assertEquals(18, new Hai(Hai.Type.SOZU, 1, null, false).getIndex());
-        assertEquals(26, new Hai(Hai.Type.SOZU, 9, null, false).getIndex());
-        assertEquals(27, new Hai(Hai.Type.JIHAI, 0, Ji.TON, false).getIndex());
-        assertEquals(28, new Hai(Hai.Type.JIHAI, 0, Ji.NAN, false).getIndex());
-        assertEquals(29, new Hai(Hai.Type.JIHAI, 0, Ji.SHA, false).getIndex());
-        assertEquals(30, new Hai(Hai.Type.JIHAI, 0, Ji.PE, false).getIndex());
-        assertEquals(31, new Hai(Hai.Type.JIHAI, 0, Ji.HAKU, false).getIndex());
-        assertEquals(32, new Hai(Hai.Type.JIHAI, 0, Ji.HATSU, false).getIndex());
-        assertEquals(33, new Hai(Hai.Type.JIHAI, 0, Ji.CHUN, false).getIndex());
+    public void testGetId() {
+        assertEquals(0, new Hai(Hai.Type.MANZU, 1, null, false).getId());
+        assertEquals(8, new Hai(Hai.Type.MANZU, 9, null, false).getId());
+        assertEquals(9, new Hai(Hai.Type.PINZU, 1, null, false).getId());
+        assertEquals(17, new Hai(Hai.Type.PINZU, 9, null, false).getId());
+        assertEquals(18, new Hai(Hai.Type.SOZU, 1, null, false).getId());
+        assertEquals(26, new Hai(Hai.Type.SOZU, 9, null, false).getId());
+        assertEquals(27, new Hai(Hai.Type.JIHAI, 0, Ji.TON, false).getId());
+        assertEquals(28, new Hai(Hai.Type.JIHAI, 0, Ji.NAN, false).getId());
+        assertEquals(29, new Hai(Hai.Type.JIHAI, 0, Ji.SHA, false).getId());
+        assertEquals(30, new Hai(Hai.Type.JIHAI, 0, Ji.PE, false).getId());
+        assertEquals(31, new Hai(Hai.Type.JIHAI, 0, Ji.HAKU, false).getId());
+        assertEquals(32, new Hai(Hai.Type.JIHAI, 0, Ji.HATSU, false).getId());
+        assertEquals(33, new Hai(Hai.Type.JIHAI, 0, Ji.CHUN, false).getId());
     }
 
     @Test
-    public void testOfIndex() {
-        assertEquals(Hai.ofIndex(0), new Hai(Hai.Type.MANZU, 1, null, false));
-        assertEquals(Hai.ofIndex(8), new Hai(Hai.Type.MANZU, 9, null, false));
-        assertEquals(Hai.ofIndex(9), new Hai(Hai.Type.PINZU, 1, null, false));
-        assertEquals(Hai.ofIndex(17), new Hai(Hai.Type.PINZU, 9, null, false));
-        assertEquals(Hai.ofIndex(18), new Hai(Hai.Type.SOZU, 1, null, false));
-        assertEquals(Hai.ofIndex(26), new Hai(Hai.Type.SOZU, 9, null, false));
-        assertEquals(Hai.ofIndex(27), new Hai(Hai.Type.JIHAI, 0, Ji.TON, false));
-        assertEquals(Hai.ofIndex(28), new Hai(Hai.Type.JIHAI, 0, Ji.NAN, false));
-        assertEquals(Hai.ofIndex(29), new Hai(Hai.Type.JIHAI, 0, Ji.SHA, false));
-        assertEquals(Hai.ofIndex(30), new Hai(Hai.Type.JIHAI, 0, Ji.PE, false));
-        assertEquals(Hai.ofIndex(31), new Hai(Hai.Type.JIHAI, 0, Ji.HAKU, false));
-        assertEquals(Hai.ofIndex(32), new Hai(Hai.Type.JIHAI, 0, Ji.HATSU, false));
-        assertEquals(Hai.ofIndex(33), new Hai(Hai.Type.JIHAI, 0, Ji.CHUN, false));
+    public void testOfId() {
+        assertEquals(Hai.ofId(0), new Hai(Hai.Type.MANZU, 1, null, false));
+        assertEquals(Hai.ofId(8), new Hai(Hai.Type.MANZU, 9, null, false));
+        assertEquals(Hai.ofId(9), new Hai(Hai.Type.PINZU, 1, null, false));
+        assertEquals(Hai.ofId(17), new Hai(Hai.Type.PINZU, 9, null, false));
+        assertEquals(Hai.ofId(18), new Hai(Hai.Type.SOZU, 1, null, false));
+        assertEquals(Hai.ofId(26), new Hai(Hai.Type.SOZU, 9, null, false));
+        assertEquals(Hai.ofId(27), new Hai(Hai.Type.JIHAI, 0, Ji.TON, false));
+        assertEquals(Hai.ofId(28), new Hai(Hai.Type.JIHAI, 0, Ji.NAN, false));
+        assertEquals(Hai.ofId(29), new Hai(Hai.Type.JIHAI, 0, Ji.SHA, false));
+        assertEquals(Hai.ofId(30), new Hai(Hai.Type.JIHAI, 0, Ji.PE, false));
+        assertEquals(Hai.ofId(31), new Hai(Hai.Type.JIHAI, 0, Ji.HAKU, false));
+        assertEquals(Hai.ofId(32), new Hai(Hai.Type.JIHAI, 0, Ji.HATSU, false));
+        assertEquals(Hai.ofId(33), new Hai(Hai.Type.JIHAI, 0, Ji.CHUN, false));
     }
 }
