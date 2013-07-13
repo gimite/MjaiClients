@@ -6,11 +6,11 @@ import java.util.List;
 
 public class HoraUtil {
 
-    private static final int NUM_HAI = 34;
-    private static final int NUM_MENTSU = 55;
+    private static final int NUM_HAI_ID = 34;
+    private static final int NUM_MENTSU_ID = 55;
 
     public static boolean isHoraIgnoreYaku(List<Hai> hais) {
-        int[] countVector = new int[NUM_HAI];
+        int[] countVector = new int[NUM_HAI_ID];
         for (Hai hai : hais) {
             countVector[hai.getId()]++;
         }
@@ -18,7 +18,7 @@ public class HoraUtil {
             return true;
         }
         // TODO: Handle Kokushimuso.
-        return isHoraIgnoreYakuInternal(countVector, new int[NUM_HAI], 4, 0);
+        return isHoraIgnoreYakuInternal(countVector, new int[NUM_HAI_ID], 4, 0);
     }
 
     public static boolean isHoraIgnoreYaku(List<Hai> tehais, Hai agarihai) {
@@ -32,21 +32,21 @@ public class HoraUtil {
             int minMentsuIndex) {
         if (leftMentsu == 0) {
             // Add janto
-            for (int haiIndex = 0; haiIndex < NUM_HAI; haiIndex++) {
-                targetVector[haiIndex] += 2;
+            for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
+                targetVector[haiId] += 2;
                 if (Arrays.equals(currentVector, targetVector)) {
                     return true;
                 }
-                targetVector[haiIndex] -= 2;
+                targetVector[haiId] -= 2;
             }
             return false;
         }
 
-        for (int mentsuIndex = minMentsuIndex; mentsuIndex < NUM_MENTSU; mentsuIndex++) {
+        for (int mentsuIndex = minMentsuIndex; mentsuIndex < NUM_MENTSU_ID; mentsuIndex++) {
             MentsuUtil.addMentsu(targetVector, mentsuIndex);
             boolean isValid = true;
-            for (int haiIndex = 0; haiIndex < NUM_HAI; haiIndex++) {
-                if (currentVector[haiIndex] < targetVector[haiIndex]) {
+            for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
+                if (currentVector[haiId] < targetVector[haiId]) {
                     isValid = false;
                     break;
                 }
@@ -64,8 +64,8 @@ public class HoraUtil {
     }
 
     private static boolean isChitoitsu(int[] countVector) {
-        for (int haiIndex = 0; haiIndex < NUM_HAI; haiIndex++) {
-            if (countVector[haiIndex] != 0 && countVector[haiIndex] != 2) {
+        for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
+            if (countVector[haiId] != 0 && countVector[haiId] != 2) {
                 return false;
             }
         }

@@ -4,23 +4,24 @@ import java.util.List;
 
 public class ShantensuUtil {
 
-    private static final int NUM_HAI = 34;
-    private static final int NUM_MENTSU = 55;
+    private static final int NUM_HAI_ID = 34;
+    private static final int NUM_MENTSU_ID = 55;
 
     public static int calculateShantensu(List<Hai> hais) {
-        int[] countVector = new int[NUM_HAI];
+        int[] countVector = new int[NUM_HAI_ID];
         for (Hai hai : hais) {
             countVector[hai.getId()]++;
         }
         int chitoitsuShantensu = calculateChitoitsuShantensu(countVector);
         // TODO: Handle Kokushimuso
-        return calculateShantensuInternal(countVector, new int[NUM_HAI], 4, 0, chitoitsuShantensu);
+        return calculateShantensuInternal(
+                countVector, new int[NUM_HAI_ID], 4, 0, chitoitsuShantensu);
     }
 
     private static int calculateChitoitsuShantensu(int[] currentVector) {
         int numPairs = 0;
-        for (int haiIndex = 0; haiIndex < NUM_HAI; haiIndex++) {
-            if (currentVector[haiIndex] == 2) {
+        for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
+            if (currentVector[haiId] == 2) {
                 numPairs++;
             }
         }
@@ -33,19 +34,19 @@ public class ShantensuUtil {
         if (leftMentsu == 0) {
             // Add janto.
             int minShantensu = foundMinShantensu;
-            for (int haiIndex = 0; haiIndex < NUM_HAI; haiIndex++) {
-                targetVector[haiIndex] += 2;
+            for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
+                targetVector[haiId] += 2;
                 if (isValidTargetVector(targetVector)) {
                     int shantensu = calculateShantensuLowerBound(currentVector, targetVector);
                     minShantensu = Math.min(shantensu, minShantensu);
                 }
-                targetVector[haiIndex] -= 2;
+                targetVector[haiId] -= 2;
             }
             return minShantensu;
         }
 
         int minShantensu = foundMinShantensu;
-        for (int mentsuIndex = minMentsuIndex; mentsuIndex < NUM_MENTSU; mentsuIndex++) {
+        for (int mentsuIndex = minMentsuIndex; mentsuIndex < NUM_MENTSU_ID; mentsuIndex++) {
             MentsuUtil.addMentsu(targetVector, mentsuIndex);
             int lowerBound = calculateShantensuLowerBound(currentVector, targetVector);
             if (isValidTargetVector(targetVector) && lowerBound < foundMinShantensu) {
@@ -60,7 +61,7 @@ public class ShantensuUtil {
 
     private static int calculateShantensuLowerBound(int[] currentVector, int[] targetVector) {
         int count = 0;
-        for (int haiIndex = 0; haiIndex < NUM_HAI; haiIndex++) {
+        for (int haiIndex = 0; haiIndex < NUM_HAI_ID; haiIndex++) {
             if (targetVector[haiIndex] > currentVector[haiIndex]) {
                 count += targetVector[haiIndex] - currentVector[haiIndex];
             }
@@ -69,7 +70,7 @@ public class ShantensuUtil {
     }
 
     private static boolean isValidTargetVector(int[] targetVector) {
-        for (int haiIndex = 0; haiIndex < NUM_HAI; haiIndex++) {
+        for (int haiIndex = 0; haiIndex < NUM_HAI_ID; haiIndex++) {
             if (targetVector[haiIndex] > 4) {
                 return false;
             }
