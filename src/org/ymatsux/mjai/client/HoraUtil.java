@@ -28,8 +28,7 @@ public class HoraUtil {
     }
 
     private static boolean isHoraIgnoreYakuInternal(
-            int[] currentVector, int[] targetVector, int leftMentsu,
-            int minMentsuIndex) {
+            int[] currentVector, int[] targetVector, int leftMentsu, int minMentsuId) {
         if (leftMentsu == 0) {
             // Add janto
             for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
@@ -42,8 +41,8 @@ public class HoraUtil {
             return false;
         }
 
-        for (int mentsuIndex = minMentsuIndex; mentsuIndex < NUM_MENTSU_ID; mentsuIndex++) {
-            MentsuUtil.addMentsu(targetVector, mentsuIndex);
+        for (int mentsuId = minMentsuId; mentsuId < NUM_MENTSU_ID; mentsuId++) {
+            MentsuUtil.addMentsu(targetVector, mentsuId);
             boolean isValid = true;
             for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
                 if (currentVector[haiId] < targetVector[haiId]) {
@@ -53,12 +52,12 @@ public class HoraUtil {
             }
             if (isValid) {
                 boolean isHora = isHoraIgnoreYakuInternal(
-                        currentVector, targetVector, leftMentsu - 1, mentsuIndex);
+                        currentVector, targetVector, leftMentsu - 1, mentsuId);
                 if (isHora) {
                     return true;
                 }
             }
-            MentsuUtil.removeMentsu(targetVector, mentsuIndex);
+            MentsuUtil.removeMentsu(targetVector, mentsuId);
         }
         return false;
     }

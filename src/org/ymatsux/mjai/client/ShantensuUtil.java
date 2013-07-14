@@ -29,8 +29,8 @@ public class ShantensuUtil {
     }
 
     private static int calculateShantensuInternal(
-            int[] currentVector, int[] targetVector, int leftMentsu,
-            int minMentsuIndex, int foundMinShantensu) {
+            int[] currentVector, int[] targetVector, int leftMentsu, int minMentsuId,
+            int foundMinShantensu) {
         if (leftMentsu == 0) {
             // Add janto.
             int minShantensu = foundMinShantensu;
@@ -46,32 +46,32 @@ public class ShantensuUtil {
         }
 
         int minShantensu = foundMinShantensu;
-        for (int mentsuIndex = minMentsuIndex; mentsuIndex < NUM_MENTSU_ID; mentsuIndex++) {
-            MentsuUtil.addMentsu(targetVector, mentsuIndex);
+        for (int mentsuId = minMentsuId; mentsuId < NUM_MENTSU_ID; mentsuId++) {
+            MentsuUtil.addMentsu(targetVector, mentsuId);
             int lowerBound = calculateShantensuLowerBound(currentVector, targetVector);
             if (isValidTargetVector(targetVector) && lowerBound < foundMinShantensu) {
                 int shantensu = calculateShantensuInternal(
-                        currentVector, targetVector, leftMentsu - 1, mentsuIndex, minShantensu);
+                        currentVector, targetVector, leftMentsu - 1, mentsuId, minShantensu);
                 minShantensu = Math.min(shantensu, minShantensu);
             }
-            MentsuUtil.removeMentsu(targetVector, mentsuIndex);
+            MentsuUtil.removeMentsu(targetVector, mentsuId);
         }
         return minShantensu;
     }
 
     private static int calculateShantensuLowerBound(int[] currentVector, int[] targetVector) {
         int count = 0;
-        for (int haiIndex = 0; haiIndex < NUM_HAI_ID; haiIndex++) {
-            if (targetVector[haiIndex] > currentVector[haiIndex]) {
-                count += targetVector[haiIndex] - currentVector[haiIndex];
+        for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
+            if (targetVector[haiId] > currentVector[haiId]) {
+                count += targetVector[haiId] - currentVector[haiId];
             }
         }
         return count - 1;
     }
 
     private static boolean isValidTargetVector(int[] targetVector) {
-        for (int haiIndex = 0; haiIndex < NUM_HAI_ID; haiIndex++) {
-            if (targetVector[haiIndex] > 4) {
+        for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
+            if (targetVector[haiId] > 4) {
                 return false;
             }
         }

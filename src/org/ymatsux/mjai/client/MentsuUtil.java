@@ -47,6 +47,10 @@ public class MentsuUtil {
         countVector[MENTSUS[mentsuIndex][2]]--;
     }
 
+    public static int[] getMentsu(int mentsuIndex) {
+        return MENTSUS[mentsuIndex];
+    }
+
     private MentsuUtil() {
     }
 }
