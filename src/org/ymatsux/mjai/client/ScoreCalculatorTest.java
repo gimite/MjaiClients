@@ -75,7 +75,7 @@ public class ScoreCalculatorTest {
     public void testTanyao() {
         // Tanyao (1 fan)
         // menzenkafu (10 fu) anko (4 fu)
-        // 1fan 40 fu
+        // 1 fan 40 fu
         assertEquals(1300, calculateScore("2m,3m,4m,3p,4p,5p,6p,7p,4s,4s,4s,7s,7s,", "5p", false));
 
         // Not tanyao
@@ -83,6 +83,38 @@ public class ScoreCalculatorTest {
 
         // Not tanyao
         assertEquals(0, calculateScore("1m,2m,3m,3p,4p,5p,6p,7p,4s,4s,4s,9s,9s,", "5p", false));
+    }
+
+    @Test
+    public void testAkahai() {
+        // Tanyao (1 fan) Akahai (1 fan)
+        // menzenkafu (10 fu) anko (4 fu)
+        // 2 fan 40 fu
+        assertEquals(2600, calculateScore("2m,3m,4m,3p,4p,5pr,6p,7p,4s,4s,4s,7s,7s,", "5p", false));
+
+        // Tanyao (1 fan) Akahai (1 fan)
+        // menzenkafu (10 fu) anko (4 fu)
+        // 2 fan 40 fu
+        assertEquals(2600, calculateScore("2m,3m,4m,3p,4p,5p,6p,7p,4s,4s,4s,7s,7s,", "5pr", false));
+
+        // Akahai only is invalid.
+        assertEquals(0, calculateScore("2m,3m,4m,3p,4p,5pr,6p,7p,4s,4s,4s,9s,9s,", "5p", false));
+    }
+
+    @Test
+    public void testDora() {
+        // Tanyao (1 fan) Dora (1 fan)
+        // menzenkafu (10 fu) anko (4 fu)
+        // 2 fan 40 fu
+        assertEquals(2600, calculateScore("3m,4m,5m,3p,4p,5p,6p,7p,4s,4s,4s,7s,7s,", "5p", false));
+
+        // Tanyao (1 fan) Dora (1 fan) Akahai (1 fan)
+        // menzenkafu (10 fu) anko (4 fu)
+        // 3 fan 40 fu
+        assertEquals(5200, calculateScore("3m,4m,5mr,3p,4p,5p,6p,7p,4s,4s,4s,7s,7s,", "5p", false));
+
+        // Dora only is invalid.
+        assertEquals(0, calculateScore("3m,4m,5m,3p,4p,5pr,6p,7p,4s,4s,4s,9s,9s,", "5p", false));
     }
 
     private List<Hai> readHaiList(String string) {

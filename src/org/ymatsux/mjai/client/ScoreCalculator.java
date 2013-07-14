@@ -16,6 +16,7 @@ public class ScoreCalculator {
     private final List<Hai> doras;
     private final Hai bakaze;
     private final Hai jikaze;
+    private final int doraCount;
 
     public ScoreCalculator(
             List<Hai> tehais, Hai agarihai, boolean isTsumoho, boolean doneRichi,
@@ -28,6 +29,33 @@ public class ScoreCalculator {
         this.doras = doras;
         this.bakaze = bakaze;
         this.jikaze = jikaze;
+        this.doraCount = countDora(tehais, agarihai, doras);
+    }
+
+    private static int countDora(List<Hai> tehais, Hai agarihai, List<Hai> doras) {
+        int count = 0;
+
+        for (Hai dora : doras) {
+            for (Hai tehai : tehais) {
+                if (tehai.equalsIgnoreAkahai(dora)) {
+                    count++;
+                }
+            }
+            if (agarihai.equalsIgnoreAkahai(dora)) {
+                count++;
+            }
+        }
+
+        for (Hai tehai : tehais) {
+            if (tehai.isAkahai()) {
+                count++;
+            }
+        }
+        if (agarihai.isAkahai()) {
+            count++;
+        }
+
+        return count;
     }
 
     public int calculateScore() {
@@ -150,6 +178,10 @@ public class ScoreCalculator {
         if (isPinfu(mentsus, janto)) {
             fan += 1;
             isPinfu = true;
+        }
+
+        if (fan > 0) {
+            fan += doraCount;
         }
 
         // Fu

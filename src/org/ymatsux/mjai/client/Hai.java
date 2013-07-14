@@ -184,6 +184,10 @@ public class Hai {
         }
     }
 
+    public boolean isAkahai() {
+        return isAkahai;
+    }
+
     public static Hai ofId(int id) {
         if (0 <= id && id < 9) {
             return new Hai(Type.MANZU, id + 1, null, false);
