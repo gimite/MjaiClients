@@ -25,6 +25,7 @@ public abstract class BaseMjaiClient implements MjaiClient {
 
     protected int id = -1;
     protected int oyaId = -1;
+    protected boolean isOya;
     protected List<Hai> doras;
     protected Hai bakaze;
     protected Hai jikaze;
@@ -117,6 +118,7 @@ public abstract class BaseMjaiClient implements MjaiClient {
         numRemainingPipai = INITIAL_NUM_REMAINING_PIPAI;
         bakaze = Hai.parse(inputJson.get("bakaze").asText());
         oyaId = inputJson.get("oya").asInt();
+        isOya = id == oyaId;
         jikaze = Hai.parse(new String[] { "E", "S", "W", "N" }[(id - oyaId + 4) % 4]);
         Hai doraMarker = Hai.parse(inputJson.get("dora_marker").asText());
         doras = new ArrayList<Hai>();
