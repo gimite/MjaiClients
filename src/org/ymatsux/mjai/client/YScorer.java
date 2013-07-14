@@ -3,7 +3,6 @@ package org.ymatsux.mjai.client;
 import java.util.ArrayList;
 import java.util.List;
 
-// Version 0.1
 public class YScorer {
 
     private static final int NUM_HAI_ID = 34;
