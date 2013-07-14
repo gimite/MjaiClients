@@ -27,6 +27,13 @@ public class Toitsu {
         return machiType;
     }
 
+    public boolean isYaochuhai() {
+        return haiId == 0 || haiId == 8 ||
+                haiId == 9 || haiId == 17 ||
+                haiId == 18 || haiId == 26 ||
+                (27 <= haiId && haiId < 34);
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

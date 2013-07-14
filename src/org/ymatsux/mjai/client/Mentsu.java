@@ -78,6 +78,13 @@ public class Mentsu {
                 (48 <= mentsuId && mentsuId < 55);
     }
 
+    public boolean hasYaochuhai() {
+        return mentsuId == 0 || mentsuId == 6 ||
+                mentsuId == 7 || mentsuId == 13 ||
+                mentsuId == 14 || mentsuId == 20 ||
+                isYaochuhai();
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

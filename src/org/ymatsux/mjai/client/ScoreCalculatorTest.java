@@ -47,44 +47,42 @@ public class ScoreCalculatorTest {
     @Test
     public void testPinfu() {
         // Not Pinfu (kanchan)
-        // Menzenchintsumoho (1 fan)
-        // tsumo (2 fu) + yaochuhai anko (8 fu) + kanchan (2 fu)
-        // 1 fan 30 fu
-        assertEquals(
-                1000, calculateScore("1m,2m,3m,4p,5p,6p,7p,8p,9p,1s,1s,7s,9s", "8s", true));
+        assertEquals(0, calculateScore("1m,2m,3m,4p,5p,6p,7p,8p,9p,1s,1s,7s,9s", "8s", false));
 
         // Not Pinfu (penchan)
-        // Menzenchintsumoho (1 fan)
-        // tsumo (2 fu) + yaochuhai anko (8 fu) + penchan (2 fu)
-        // 1 fan 30 fu
-        assertEquals(
-                1000, calculateScore("1m,2m,3m,4p,5p,6p,7p,8p,9p,1s,1s,8s,9s", "7s", true));
+        assertEquals(0, calculateScore("1m,2m,3m,4p,5p,6p,7p,8p,9p,1s,1s,8s,9s", "7s", false));
 
         // Not pinfu (janto sangenpai)
-        // Menzenchintsumoho (1 fan)
-        // tsumo (2fu) + janto sangenpai (2 fu)
-        // 1 fan 30 fu
-        assertEquals(1000, calculateScore("1m,2m,3m,4p,5p,6p,P,P,4s,5s,5s,6s,7s", "6s", true));
+        assertEquals(0, calculateScore("1m,2m,3m,4p,5p,6p,P,P,4s,5s,5s,6s,7s", "6s", false));
 
         // Not pinfu (janto bakaze)
-        // Menzenchintsumoho (1 fan)
-        // tsumo (2fu) + janto sangenpai (2 fu)
-        // 1 fan 30 fu
-        assertEquals(1000, calculateScore("1m,2m,3m,4p,5p,6p,E,E,4s,5s,5s,6s,7s", "6s", true));
+        assertEquals(0, calculateScore("1m,2m,3m,4p,5p,6p,E,E,4s,5s,5s,6s,7s", "6s", false));
 
         // Not pinfu (janto jikaze)
-        // Menzenchintsumoho (1 fan)
-        // tsumo (2fu) + janto sangenpai (2 fu)
+        assertEquals(0, calculateScore("1m,2m,3m,4p,5p,6p,S,S,4s,5s,5s,6s,7s", "6s", false));
+
+        // Pinfu (1 fan)
+        // menzenkafu (10 fu)
         // 1 fan 30 fu
-        assertEquals(1000, calculateScore("1m,2m,3m,4p,5p,6p,S,S,4s,5s,5s,6s,7s", "6s", true));
+        assertEquals(1000, calculateScore("1m,2m,3m,4p,5p,6p,W,W,4s,5s,5s,6s,7s", "6s", false));
 
         // Menzenchintsumoho (1 fan) + Pinfu (1 fan)
         // 2 fan 20 fu
         assertEquals(1300, calculateScore("1m,2m,3m,4p,5p,6p,7p,7p,4s,5s,5s,6s,7s", "6s", true));
+    }
 
-        // Menzenchintsumoho (1 fan) + Pinfu (1 fan)
-        // 2 fan 20 fu
-        assertEquals(1300, calculateScore("1m,2m,3m,4p,5p,6p,N,N,4s,5s,5s,6s,7s", "6s", true));
+    @Test
+    public void testTanyao() {
+        // Tanyao (1 fan)
+        // menzenkafu (10 fu) anko (4 fu)
+        // 1fan 40 fu
+        assertEquals(1300, calculateScore("2m,3m,4m,3p,4p,5p,6p,7p,4s,4s,4s,7s,7s,", "5p", false));
+
+        // Not tanyao
+        assertEquals(0, calculateScore("2m,3m,4m,3p,4p,5p,6p,7p,4s,4s,4s,9s,9s,", "5p", false));
+
+        // Not tanyao
+        assertEquals(0, calculateScore("1m,2m,3m,3p,4p,5p,6p,7p,4s,4s,4s,9s,9s,", "5p", false));
     }
 
     private List<Hai> readHaiList(String string) {

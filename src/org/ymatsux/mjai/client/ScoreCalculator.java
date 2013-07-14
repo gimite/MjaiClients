@@ -142,6 +142,10 @@ public class ScoreCalculator {
             // TODO: Add menzen check when furo is implemented.
             fan += 1;
         }
+        // Tanyao
+        if (isTanyao(mentsus, janto)) {
+            fan += 1;
+        }
         // Pinfu
         if (isPinfu(mentsus, janto)) {
             fan += 1;
@@ -210,6 +214,18 @@ public class ScoreCalculator {
         }
         int score = fu * (1 << (fan + 2)) * (isOya ? 6 : 4);
         return (score + 99) / 100 * 100;
+    }
+
+    private boolean isTanyao(Mentsu[] mentsus, Toitsu janto) {
+        for (Mentsu mentsu : mentsus) {
+            if (mentsu.hasYaochuhai()) {
+                return false;
+            }
+        }
+        if (janto.isYaochuhai()) {
+            return false;
+        }
+        return true;
     }
 
     private boolean isPinfu(Mentsu[] mentsus, Toitsu janto) {
