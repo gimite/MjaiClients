@@ -180,6 +180,9 @@ public class ScoreCalculator {
             isPinfu = true;
         }
 
+        // Yakuhai
+        fan += countYakuhai(mentsus, janto);
+
         if (fan > 0) {
             fan += doraCount;
         }
@@ -279,6 +282,28 @@ public class ScoreCalculator {
 
         MachiType machiType = getMachiType(mentsus, janto);
         return machiType == MachiType.RYANMEN;
+    }
+
+    private int countYakuhai(Mentsu[] mentsus, Toitsu janto) {
+        int count = 0;
+        for (Mentsu mentsu : mentsus) {
+            MentsuType mentsuType = mentsu.getMentsuType();
+            if (mentsuType == MentsuType.MINKO ||
+                    mentsuType == MentsuType.ANKO ||
+                    mentsuType == MentsuType.MINKAN ||
+                    mentsuType == MentsuType.ANKAN) {
+                if (mentsu.isSangenpai()) {
+                    count++;
+                }
+                if (mentsu.getMentsuId() - 21 == bakaze.getId()) {
+                    count++;
+                }
+                if (mentsu.getMentsuId() - 21 == jikaze.getId()) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     private MachiType getMachiType(Mentsu[] mentsus, Toitsu janto) {

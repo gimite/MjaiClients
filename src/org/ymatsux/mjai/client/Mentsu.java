@@ -78,6 +78,14 @@ public class Mentsu {
                 (48 <= mentsuId && mentsuId < 55);
     }
 
+    public boolean isSangenpai() {
+        return 52 <= mentsuId && mentsuId < 55;
+    }
+
+    public int getMentsuId() {
+        return mentsuId;
+    }
+
     public boolean hasYaochuhai() {
         return mentsuId == 0 || mentsuId == 6 ||
                 mentsuId == 7 || mentsuId == 13 ||

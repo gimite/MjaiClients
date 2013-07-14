@@ -117,6 +117,27 @@ public class ScoreCalculatorTest {
         assertEquals(0, calculateScore("3m,4m,5m,3p,4p,5pr,6p,7p,4s,4s,4s,9s,9s,", "5p", false));
     }
 
+    @Test
+    public void testYakuhai() {
+        // Sangenpai (1 fan)
+        // menzenkafu (10 fu) yochuhai anko (8 fu) tanki (2 fu)
+        // 1 fan 40 fu
+        assertEquals(1300, calculateScore("1m,2m,3m,4p,5p,6p,P,P,P,1s,2s,3s,4s", "1s", false));
+
+        // Chanfonpai (1 fan)
+        // menzenkafu (10 fu) yochuhai anko (8 fu) tanki (2 fu)
+        // 1 fan 40 fu
+        assertEquals(1300, calculateScore("1m,2m,3m,4p,5p,6p,E,E,E,1s,2s,3s,4s", "1s", false));
+
+        // Menfonpai (1 fan)
+        // menzenkafu (10 fu) yochuhai anko (8 fu) tanki (2 fu)
+        // 1 fan 40 fu
+        assertEquals(1300, calculateScore("1m,2m,3m,4p,5p,6p,S,S,S,1s,2s,3s,4s", "1s", false));
+
+        // Not yakuhai
+        assertEquals(0, calculateScore("1m,2m,3m,4p,5p,6p,W,W,W,1s,2s,3s,4s", "1s", false));
+    }
+
     private List<Hai> readHaiList(String string) {
         String[] haiStrings = string.split(",");
         List<Hai> haiList = new ArrayList<Hai>();
