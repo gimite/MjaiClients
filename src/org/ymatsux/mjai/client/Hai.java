@@ -200,4 +200,28 @@ public class Hai {
         }
         throw new IllegalArgumentException();
     }
+
+    public Hai next() {
+        if (type == Type.MANZU || type == Type.PINZU || type == Type.SOZU) {
+           return new Hai(type, kazu == 9 ? 1 : kazu + 1, null, false);
+        }
+        switch (ji) {
+        case TON:
+            return new Hai(Type.JIHAI, 0, Ji.NAN, false);
+        case NAN:
+            return new Hai(Type.JIHAI, 0, Ji.SHA, false);
+        case SHA:
+            return new Hai(Type.JIHAI, 0, Ji.PE, false);
+        case PE:
+            return new Hai(Type.JIHAI, 0, Ji.TON, false);
+        case HAKU:
+            return new Hai(Type.JIHAI, 0, Ji.HATSU, false);
+        case HATSU:
+            return new Hai(Type.JIHAI, 0, Ji.CHUN, false);
+        case CHUN:
+            return new Hai(Type.JIHAI, 0, Ji.HAKU, false);
+        default:
+            throw new IllegalStateException();
+        }
+    }
 }

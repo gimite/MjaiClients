@@ -25,6 +25,7 @@ public abstract class BaseMjaiClient implements MjaiClient {
 
     protected int id = -1;
     protected int oyaId = -1;
+    protected List<Hai> doras;
     protected Hai bakaze;
     protected Hai jikaze;
     protected List<Hai> tehais;
@@ -117,6 +118,9 @@ public abstract class BaseMjaiClient implements MjaiClient {
         bakaze = Hai.parse(inputJson.get("bakaze").asText());
         oyaId = inputJson.get("oya").asInt();
         jikaze = Hai.parse(new String[] { "E", "S", "W", "N" }[(id - oyaId + 4) % 4]);
+        Hai doraMarker = Hai.parse(inputJson.get("dora_marker").asText());
+        doras = new ArrayList<Hai>();
+        doras.add(doraMarker.next());
         JsonNode tehaisJson = inputJson.get("tehais");
         tehais = new ArrayList<Hai>();
         for (int i = 0; i < INITIAL_TEHAI_SIZE; i++) {
