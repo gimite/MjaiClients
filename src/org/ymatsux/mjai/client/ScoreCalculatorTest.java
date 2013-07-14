@@ -138,6 +138,21 @@ public class ScoreCalculatorTest {
         assertEquals(0, calculateScore("1m,2m,3m,4p,5p,6p,W,W,W,1s,2s,3s,4s", "1s", false));
     }
 
+    @Test
+    public void testRichi() {
+        // Richi (1 fan)
+        // menzenkafu (10 fu) anko (4 fu)
+        // 1 fan 40 fu
+        assertEquals(
+                1300, calculateScore("1m,2m,3m,4p,5p,6p,7s,8s,9s,4s,4s,6s,6s", "4s", false, true));
+
+        // Richi (1 fan) + Menzenchintsumoho (1 fan)
+        // tsumo (2 fu) anko (4 fu)
+        // 2 fan 30 fu
+        assertEquals(
+                2000, calculateScore("1m,2m,3m,4p,5p,6p,7s,8s,9s,4s,4s,6s,6s", "4s", true, true));
+    }
+
     private List<Hai> readHaiList(String string) {
         String[] haiStrings = string.split(",");
         List<Hai> haiList = new ArrayList<Hai>();
@@ -152,6 +167,16 @@ public class ScoreCalculatorTest {
         Hai agarihai = Hai.parse(agarihaiString);
         ScoreCalculator calculator = new ScoreCalculator(
                 tehais, agarihai, isTsumoho, false,
+                false, readHaiList("5m"), Hai.parse("E"), Hai.parse("S"));
+        return calculator.calculateScore();
+    }
+
+    public int calculateScore(String tehaisString, String agarihaiString, boolean isTsumoho,
+            boolean doneRichi) {
+        List<Hai> tehais = readHaiList(tehaisString);
+        Hai agarihai = Hai.parse(agarihaiString);
+        ScoreCalculator calculator = new ScoreCalculator(
+                tehais, agarihai, isTsumoho, doneRichi,
                 false, readHaiList("5m"), Hai.parse("E"), Hai.parse("S"));
         return calculator.calculateScore();
     }

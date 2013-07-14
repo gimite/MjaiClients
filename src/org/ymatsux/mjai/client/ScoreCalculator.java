@@ -13,7 +13,6 @@ public class ScoreCalculator {
     private final boolean isTsumoho;
     private final boolean doneRichi;
     private final boolean isOya;
-    private final List<Hai> doras;
     private final Hai bakaze;
     private final Hai jikaze;
     private final int doraCount;
@@ -26,7 +25,6 @@ public class ScoreCalculator {
         this.isTsumoho = isTsumoho;
         this.doneRichi = doneRichi;
         this.isOya = isOya;
-        this.doras = doras;
         this.bakaze = bakaze;
         this.jikaze = jikaze;
         this.doraCount = countDora(tehais, agarihai, doras);
