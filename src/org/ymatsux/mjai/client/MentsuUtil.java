@@ -51,6 +51,24 @@ public class MentsuUtil {
         return MENTSUS[mentsuIndex];
     }
 
+    public static boolean isYaochuhai(int mentsuId) {
+        return mentsuId == 21 || mentsuId == 29 ||
+                mentsuId == 30 || mentsuId == 38 ||
+                mentsuId == 39 || mentsuId == 47 ||
+                (48 <= mentsuId && mentsuId < 55);
+    }
+
+    public static boolean isSangenpai(int mentsuId) {
+        return 52 <= mentsuId && mentsuId < 55;
+    }
+
+    public static boolean hasYaochuhai(int mentsuId) {
+        return mentsuId == 0 || mentsuId == 6 ||
+                mentsuId == 7 || mentsuId == 13 ||
+                mentsuId == 14 || mentsuId == 20 ||
+                isYaochuhai(mentsuId);
+    }
+
     private MentsuUtil() {
     }
 }

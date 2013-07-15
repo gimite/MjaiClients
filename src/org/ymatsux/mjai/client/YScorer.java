@@ -31,13 +31,13 @@ public class YScorer {
         }
 
         return calculateYScoreInternal(
-                countVector, new int[NUM_HAI_ID], 0, 0, new int[4], maxShantensu);
+                countVector, new int[NUM_HAI_ID], 0, 0, 4, maxShantensu);
     }
 
     private double calculateYScoreInternal(
             int[] currentVector, int[] targetVector,
-            int indexInMentsuIds, int minMentsuId, int[] mentsuIds, int maxShantensu) {
-        if (indexInMentsuIds == mentsuIds.length) {
+            int indexInMentsuIds, int minMentsuId, int numMentsu, int maxShantensu) {
+        if (indexInMentsuIds == numMentsu) {
             double yScore = 0.0;
             // Add janto.
             for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
@@ -60,7 +60,7 @@ public class YScorer {
             int lowerBound = calculateShantensuLowerBound(currentVector, targetVector);
             if (isValidTargetVector(targetVector) && lowerBound <= maxShantensu) {
                 yScore += calculateYScoreInternal(
-                        currentVector, targetVector, indexInMentsuIds + 1, mentsuId, mentsuIds,
+                        currentVector, targetVector, indexInMentsuIds + 1, mentsuId, numMentsu,
                         maxShantensu);
             }
             MentsuUtil.removeMentsu(targetVector, mentsuId);

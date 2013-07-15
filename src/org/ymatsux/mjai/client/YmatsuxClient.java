@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-// Version 0.1.0
+// Version 0.1.1
 public class YmatsuxClient extends BaseMjaiClient {
 
     public YmatsuxClient(Socket socket) throws IOException {
@@ -34,7 +34,66 @@ public class YmatsuxClient extends BaseMjaiClient {
     }
 
     private DahaiAction chooseDahaiAction(Hai tsumohai) {
+        if (doneRichi) {
+            return new DahaiAction(-1, false);
+        }
         int shantensu = ShantensuUtil.calculateShantensu(tehais);
+        if (shantensu >= 4) {
+            return chooseDahaiActionByXScorer(tsumohai, shantensu);
+        } else {
+            return chooseDahaiActionByYScorer(tsumohai, shantensu);
+        }
+    }
+
+    private DahaiAction chooseDahaiActionByXScorer(Hai tsumohai, int shantensu) {
+        List<Integer> alternatives = new ArrayList<Integer>();
+        for (int i = 0; i < tehais.size(); i++) {
+            List<Hai> trialTehais = new ArrayList<Hai>(tehais);
+            trialTehais.set(i, tsumohai);
+            int trialShantensu = ShantensuUtil.calculateShantensu(trialTehais);
+            if (trialShantensu < shantensu) {
+                alternatives.add(i);
+            }
+        }
+
+        int bestSutehaiIndex = -1;
+        if (alternatives.isEmpty()) {
+            XScorer xScorer = new XScorer(tehais, isOya, doras, bakaze, jikaze);
+            double maxXScore = xScorer.calculateXScore(shantensu);
+            for (int sutehaiIndex = 0; sutehaiIndex < tehais.size(); sutehaiIndex++) {
+                List<Hai> trialTehais = new ArrayList<Hai>(tehais);
+                trialTehais.set(sutehaiIndex, tsumohai);
+                XScorer trialXScorer = new XScorer(trialTehais, isOya, doras, bakaze, jikaze);
+                double xScore = trialXScorer.calculateXScore(shantensu);
+                if (xScore > maxXScore) {
+                    maxXScore = xScore;
+                    bestSutehaiIndex = sutehaiIndex;
+                }
+            }
+        } else {
+            int newShantensu = shantensu - 1;
+            double maxXScore = 0.0;
+            for (int alternative : alternatives) {
+                List<Hai> trialTehais = new ArrayList<Hai>(tehais);
+                trialTehais.set(alternative, tsumohai);
+                XScorer trialXScorer = new XScorer(trialTehais, isOya, doras, bakaze, jikaze);
+                double xScore = trialXScorer.calculateXScore(newShantensu);
+                if (xScore > maxXScore) {
+                    maxXScore = xScore;
+                    bestSutehaiIndex = alternative;
+                }
+            }
+        }
+
+        if (bestSutehaiIndex == -1) {
+            return new DahaiAction(-1, false);
+        } else {
+            // We don't do consider richi here because the shantensu is larger when we use XScorer.
+            return new DahaiAction(bestSutehaiIndex, false);
+        }
+    }
+
+    private DahaiAction chooseDahaiActionByYScorer(Hai tsumohai, int shantensu) {
         YScorer yScorer = new YScorer(tehais, isOya, doras, bakaze, jikaze);
         int sutehaiIndex = -1;
         double maxYScore = yScorer.calculateYScore(shantensu);
@@ -78,6 +137,6 @@ public class YmatsuxClient extends BaseMjaiClient {
 
     @Override
     protected String getClientName() {
-        return "ymatsux";
+        return "ymatsux-0.1.1";
     }
 }
