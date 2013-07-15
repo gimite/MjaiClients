@@ -23,6 +23,8 @@ public abstract class BaseMjaiClient implements MjaiClient {
     private final PrintWriter writer;
     private final ObjectMapper objectMapper;
 
+    protected int score = 0;
+
     protected int id = -1;
     protected int oyaId = -1;
     protected boolean isOya;
@@ -63,6 +65,12 @@ public abstract class BaseMjaiClient implements MjaiClient {
             case "dahai":
                 processDahai(inputJson);
                 break;
+            case "hora":
+                processHora(inputJson);
+                break;
+            case "ryukyoku":
+                processRyukyoku(inputJson);
+                break;
             case "end_game":
                 sendNone();
                 return;
@@ -85,6 +93,7 @@ public abstract class BaseMjaiClient implements MjaiClient {
 
     private void processStartGame(JsonNode inputJson) {
         id = inputJson.get("id").asInt();
+        score = 25000;
         sendNone();
     }
 
@@ -128,6 +137,16 @@ public abstract class BaseMjaiClient implements MjaiClient {
         for (int i = 0; i < INITIAL_TEHAI_SIZE; i++) {
             tehais.add(Hai.parse(tehaisJson.get(id).get(i).asText()));
         }
+        sendNone();
+    }
+
+    private void processHora(JsonNode inputJson) {
+        score = inputJson.get("scores").get(id).asInt();
+        sendNone();
+    }
+
+    private void processRyukyoku(JsonNode inputJson) {
+        score = inputJson.get("scores").get(id).asInt();
         sendNone();
     }
 

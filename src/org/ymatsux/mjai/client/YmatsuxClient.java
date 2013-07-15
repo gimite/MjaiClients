@@ -113,7 +113,8 @@ public class YmatsuxClient extends BaseMjaiClient {
         if (sutehaiIndex == -1) {
             return new DahaiAction(-1, false);
         } else {
-            if (maxYScoreShantensu == 0 && numRemainingPipai >= 4 && !doneRichi && !isFuriten()) {
+            if (maxYScoreShantensu == 0 && numRemainingPipai >= 4 && !doneRichi && !isFuriten() &&
+                    score > 1000) {
                 // The new shantensu is zero in this case. Then the player can do richi.
                 return new DahaiAction(sutehaiIndex, true);
             } else {

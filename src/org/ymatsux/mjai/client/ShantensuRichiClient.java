@@ -55,7 +55,8 @@ public class ShantensuRichiClient extends BaseMjaiClient {
         } else {
             Collections.shuffle(alternatives);
             int sutehaiIndex = alternatives.get(0);
-            if (shantensu == 1 && numRemainingPipai >= 4 && !doneRichi && !isFuriten()) {
+            if (shantensu == 1 && numRemainingPipai >= 4 && !doneRichi && !isFuriten() &&
+                    score > 1000) {
                 // The new shantensu is zero in this case. Then the player can do richi.
                 return new DahaiAction(sutehaiIndex, true);
             } else {
