@@ -65,6 +65,9 @@ public abstract class BaseMjaiClient implements MjaiClient {
             case "dahai":
                 processDahai(inputJson);
                 break;
+            case "reach":
+                processRichi(inputJson);
+                break;
             case "hora":
                 processHora(inputJson);
                 break;
@@ -98,6 +101,7 @@ public abstract class BaseMjaiClient implements MjaiClient {
     }
 
     private void processTsumo(JsonNode inputJson) {
+        numRemainingPipai--;
         int actorId = inputJson.get("actor").asInt();
         if (actorId == id) {
             Hai tsumohai = Hai.parse(inputJson.get("pai").asText());
@@ -111,17 +115,21 @@ public abstract class BaseMjaiClient implements MjaiClient {
 
     private void processDahai(JsonNode inputJson) {
         int actorId = inputJson.get("actor").asInt();
+        Hai sutehai = Hai.parse(inputJson.get("pai").asText());
         if (actorId != id) {
-            Hai sutehai = Hai.parse(inputJson.get("pai").asText());
             processOthersDahai(actorId, sutehai);
         } else {
-            sendNone();
+            processSelfDahai(sutehai);
         }
+    }
+
+    protected void processSelfDahai(Hai sutehai) {
+        sendNone();
     }
 
     abstract protected void processOthersDahai(int actorId, Hai sutehai);
 
-    private void processStartKyoku(JsonNode inputJson) {
+    protected void processStartKyoku(JsonNode inputJson) {
         sutehais = new ArrayList<Hai>();
         doneRichi = false;
         numRemainingPipai = INITIAL_NUM_REMAINING_PIPAI;
@@ -137,6 +145,10 @@ public abstract class BaseMjaiClient implements MjaiClient {
         for (int i = 0; i < INITIAL_TEHAI_SIZE; i++) {
             tehais.add(Hai.parse(tehaisJson.get(id).get(i).asText()));
         }
+        sendNone();
+    }
+
+    protected void processRichi(JsonNode inputJson) {
         sendNone();
     }
 
