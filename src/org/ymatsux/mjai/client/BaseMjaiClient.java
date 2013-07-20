@@ -2,9 +2,11 @@ package org.ymatsux.mjai.client;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -28,9 +30,10 @@ public abstract class BaseMjaiClient implements MjaiClient {
 
     private final BufferedReader reader;
     private final PrintWriter writer;
+    private final PrintStream logStream;
     private final ObjectMapper objectMapper;
 
-    protected int id;
+    protected int id = -1;
     protected int score = 0;
 
     // Group kyoku-specific data here.
@@ -89,7 +92,16 @@ public abstract class BaseMjaiClient implements MjaiClient {
                 socket.getInputStream()));
         writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
                 socket.getOutputStream())));
+        if (!Flags.LOG_FILE.getValue().isEmpty()) {
+            logStream = new PrintStream(new File(Flags.LOG_FILE.getValue()));
+        } else {
+            logStream = System.err;
+        }
         objectMapper = new ObjectMapper();
+    }
+
+    protected void logPrintln(String x) {
+        logStream.println(x);
     }
 
     @Override

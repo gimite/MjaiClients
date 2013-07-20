@@ -14,7 +14,7 @@ import org.ymatsux.mjai.client.ClientActions.TsumohoAction;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-// Version 0.1.2.1
+// Version 0.1.2.2
 public class YmatsuxClient extends BaseMjaiClient {
 
     // Group kyoku-specific data here.
@@ -74,7 +74,7 @@ public class YmatsuxClient extends BaseMjaiClient {
 
     private double calculateScoreWithXScorer(
             List<Hai> hais, Hai sutehai, int newShantensu, double[] riskVector) {
-        XScorer xScorer = new XScorer(tehais(), isOya(), doras(), bakaze(), jikaze());
+        XScorer xScorer = new XScorer(hais, isOya(), doras(), bakaze(), jikaze());
         double xScore = xScorer.calculateXScore(newShantensu);
         double riskPenalty = riskVector[sutehai.getId()];
         return xScore - riskPenalty;
@@ -155,7 +155,7 @@ public class YmatsuxClient extends BaseMjaiClient {
 
     private double calculateScoreWithYScorer(
             List<Hai> hais, Hai sutehai, int currentShantensu, double[] riskVector) {
-        YScorer yScorer = new YScorer(tehais(), isOya(), doras(), bakaze(), jikaze());
+        YScorer yScorer = new YScorer(hais, isOya(), doras(), bakaze(), jikaze());
         double yScore = yScorer.calculateYScore(currentShantensu);
         double riskPenalty = currentShantensu >= 2 ? riskVector[sutehai.getId()] : 0;
         return yScore - riskPenalty;
@@ -170,7 +170,7 @@ public class YmatsuxClient extends BaseMjaiClient {
             List<Hai> trialTehais = new ArrayList<Hai>(tehais());
             trialTehais.set(i, tsumohai);
             double trialScore = calculateScoreWithYScorer(
-                    tehais(), tsumohai, shantensu, riskVector);
+                    trialTehais, tsumohai, shantensu, riskVector);
             if (trialScore > maxScore) {
                 sutehaiIndex = i;
                 maxScore = trialScore;
@@ -229,6 +229,6 @@ public class YmatsuxClient extends BaseMjaiClient {
 
     @Override
     protected String getClientName() {
-        return "ymatsux-0.1.2.1";
+        return "ymatsux-0.1.2.2";
     }
 }

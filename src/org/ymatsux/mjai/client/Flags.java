@@ -35,4 +35,5 @@ public class Flags {
     public static final Flag ROOM = new Flag("room", "default");
     public static final Flag CLIENT = new Flag("client", "ymatsux");
     public static final Flag DEBUG_OUTPUT_JSON = new Flag("debug_output_json", "false");
+    public static final Flag LOG_FILE = new Flag("log_file", "");
 }
