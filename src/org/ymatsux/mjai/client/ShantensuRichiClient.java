@@ -6,6 +6,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.ymatsux.mjai.client.ClientActions.DahaiAction;
+import org.ymatsux.mjai.client.ClientActions.NoneAction;
+import org.ymatsux.mjai.client.ClientActions.OthersDahaiAction;
+import org.ymatsux.mjai.client.ClientActions.RonhoAction;
+import org.ymatsux.mjai.client.ClientActions.SelfTsumoAction;
+import org.ymatsux.mjai.client.ClientActions.TsumohoAction;
+
 public class ShantensuRichiClient extends BaseMjaiClient {
 
     public ShantensuRichiClient(Socket socket) throws IOException {
@@ -13,36 +20,24 @@ public class ShantensuRichiClient extends BaseMjaiClient {
     }
 
     @Override
-    public String getClientName() {
+    public final String getClientName() {
         return "shantensu-richi-java";
     }
 
     @Override
-    protected final void processSelfTsumo(Hai tsumohai) {
-        if (HoraUtil.isHoraIgnoreYaku(tehais, tsumohai)) {
-            doTsumoho(tsumohai);
-            return;
+    protected final SelfTsumoAction chooseSelfTsumoAction(Hai tsumohai) {
+        if (HoraUtil.isHoraIgnoreYaku(tehais(), tsumohai)) {
+            return new TsumohoAction();
         }
 
-        DahaiAction tsumoAction = chooseDahaiAction(tsumohai);
-        doDahai(tsumohai, tsumoAction.sutehaiIndex, tsumoAction.doRichi);
-    }
-
-    private static class DahaiAction {
-        public int sutehaiIndex;
-        public boolean doRichi;
-
-        public DahaiAction(int sutehaiIndex, boolean doRichi) {
-            this.sutehaiIndex = sutehaiIndex;
-            this.doRichi = doRichi;
-        }
+        return chooseDahaiAction(tsumohai);
     }
 
     private DahaiAction chooseDahaiAction(Hai tsumohai) {
-        int shantensu = ShantensuUtil.calculateShantensu(tehais);
+        int shantensu = ShantensuUtil.calculateShantensu(tehais());
         List<Integer> alternatives = new ArrayList<Integer>();
-        for (int i = 0; i < tehais.size(); i++) {
-            List<Hai> trialTehais = new ArrayList<Hai>(tehais);
+        for (int i = 0; i < tehais().size(); i++) {
+            List<Hai> trialTehais = new ArrayList<Hai>(tehais());
             trialTehais.set(i, tsumohai);
             int trialShantensu = ShantensuUtil.calculateShantensu(trialTehais);
             if (trialShantensu < shantensu) {
@@ -55,9 +50,7 @@ public class ShantensuRichiClient extends BaseMjaiClient {
         } else {
             Collections.shuffle(alternatives);
             int sutehaiIndex = alternatives.get(0);
-            if (shantensu == 1 && numRemainingPipai >= 4 && !doneRichi && !isFuriten() &&
-                    score > 1000) {
-                // The new shantensu is zero in this case. Then the player can do richi.
+            if (canRichi(tsumohai, sutehaiIndex)) {
                 return new DahaiAction(sutehaiIndex, true);
             } else {
                 return new DahaiAction(sutehaiIndex, false);
@@ -66,15 +59,15 @@ public class ShantensuRichiClient extends BaseMjaiClient {
     }
 
     @Override
-    protected void processOthersDahai(int actorId, Hai sutehai) {
-        if (doneRichi) {
-            if (HoraUtil.isHoraIgnoreYaku(tehais, sutehai) && !isFuriten()) {
-                doRonho(actorId, sutehai);
+    protected OthersDahaiAction chooseOthersDahaiAction(int actorId, Hai sutehai) {
+        if (doneRichi()) {
+            if (HoraUtil.isHoraIgnoreYaku(tehais(), sutehai) && !isFuriten()) {
+                return new RonhoAction();
             } else {
-                sendNone();
+                return new NoneAction();
             }
         } else {
-            sendNone();
+            return new NoneAction();
         }
     }
 }

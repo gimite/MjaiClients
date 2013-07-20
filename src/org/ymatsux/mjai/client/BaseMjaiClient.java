@@ -10,6 +10,13 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ymatsux.mjai.client.ClientActions.DahaiAction;
+import org.ymatsux.mjai.client.ClientActions.NoneAction;
+import org.ymatsux.mjai.client.ClientActions.OthersDahaiAction;
+import org.ymatsux.mjai.client.ClientActions.RonhoAction;
+import org.ymatsux.mjai.client.ClientActions.SelfTsumoAction;
+import org.ymatsux.mjai.client.ClientActions.TsumohoAction;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -23,18 +30,59 @@ public abstract class BaseMjaiClient implements MjaiClient {
     private final PrintWriter writer;
     private final ObjectMapper objectMapper;
 
+    protected int id;
     protected int score = 0;
 
-    protected int id = -1;
-    protected int oyaId = -1;
-    protected boolean isOya;
-    protected List<Hai> doras;
-    protected Hai bakaze;
-    protected Hai jikaze;
-    protected List<Hai> tehais;
-    protected List<Hai> sutehais;
-    protected boolean doneRichi;
-    protected int numRemainingPipai;
+    // Group kyoku-specific data here.
+    private static class KyokuData {
+        private int oyaId = -1;
+        private boolean isOya;
+        private List<Hai> doras;
+        private Hai bakaze;
+        private Hai jikaze;
+        private List<Hai> tehais;
+        private List<Hai> sutehais;
+        private boolean doneRichi;
+        private int numRemainingPipai;
+    }
+
+    private KyokuData kyokuData;
+
+    protected final int oyaId() {
+        return kyokuData.oyaId;
+    }
+
+    protected final boolean isOya() {
+        return kyokuData.isOya;
+    }
+
+    protected final List<Hai> doras() {
+        return kyokuData.doras;
+    }
+
+    protected final Hai bakaze() {
+        return kyokuData.bakaze;
+    }
+
+    protected final Hai jikaze() {
+        return kyokuData.jikaze;
+    }
+
+    protected final List<Hai> tehais() {
+        return kyokuData.tehais;
+    }
+
+    protected final List<Hai> sutehais() {
+        return kyokuData.sutehais;
+    }
+
+    protected final boolean doneRichi() {
+        return kyokuData.doneRichi;
+    }
+
+    protected final int numRemainingPipai() {
+        return kyokuData.numRemainingPipai;
+    }
 
     public BaseMjaiClient(Socket socket) throws IOException {
         reader = new BufferedReader(new InputStreamReader(
@@ -101,7 +149,7 @@ public abstract class BaseMjaiClient implements MjaiClient {
     }
 
     private void processTsumo(JsonNode inputJson) {
-        numRemainingPipai--;
+        kyokuData.numRemainingPipai--;
         int actorId = inputJson.get("actor").asInt();
         if (actorId == id) {
             Hai tsumohai = Hai.parse(inputJson.get("pai").asText());
@@ -111,7 +159,19 @@ public abstract class BaseMjaiClient implements MjaiClient {
         }
     }
 
-    abstract protected void processSelfTsumo(Hai tsumohai);
+    private void processSelfTsumo(Hai tsumohai) {
+        SelfTsumoAction action = chooseSelfTsumoAction(tsumohai);
+        if (action instanceof DahaiAction) {
+            DahaiAction dahaiAction = (DahaiAction) action;
+            doDahai(tsumohai, dahaiAction.sutehaiIndex, dahaiAction.doRichi);
+        } else if (action instanceof TsumohoAction) {
+            doTsumoho(tsumohai);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    abstract protected SelfTsumoAction chooseSelfTsumoAction(Hai tsumohai);
 
     private void processDahai(JsonNode inputJson) {
         int actorId = inputJson.get("actor").asInt();
@@ -123,29 +183,60 @@ public abstract class BaseMjaiClient implements MjaiClient {
         }
     }
 
-    protected void processSelfDahai(Hai sutehai) {
+    private void processSelfDahai(Hai sutehai) {
+        updateStateForSelfDahai(sutehai);
         sendNone();
     }
 
-    abstract protected void processOthersDahai(int actorId, Hai sutehai);
+    protected void updateStateForSelfDahai(Hai sutehai) {
+    }
 
-    protected void processStartKyoku(JsonNode inputJson) {
-        sutehais = new ArrayList<Hai>();
-        doneRichi = false;
-        numRemainingPipai = INITIAL_NUM_REMAINING_PIPAI;
-        bakaze = Hai.parse(inputJson.get("bakaze").asText());
-        oyaId = inputJson.get("oya").asInt();
-        isOya = id == oyaId;
-        jikaze = Hai.parse(new String[] { "E", "S", "W", "N" }[(id - oyaId + 4) % 4]);
-        Hai doraMarker = Hai.parse(inputJson.get("dora_marker").asText());
-        doras = new ArrayList<Hai>();
-        doras.add(doraMarker.next());
-        JsonNode tehaisJson = inputJson.get("tehais");
-        tehais = new ArrayList<Hai>();
-        for (int i = 0; i < INITIAL_TEHAI_SIZE; i++) {
-            tehais.add(Hai.parse(tehaisJson.get(id).get(i).asText()));
+    private void processOthersDahai(int actorId, Hai sutehai) {
+        updateStateForOthersDahai(actorId, sutehai);
+        OthersDahaiAction action = chooseOthersDahaiAction(actorId, sutehai);
+        if (action instanceof NoneAction) {
+            sendNone();
+        } else if (action instanceof RonhoAction) {
+            doRonho(actorId, sutehai);
+        } else {
+            throw new IllegalStateException();
         }
+    }
+
+    protected void updateStateForOthersDahai(int actorId, Hai sutehai) {
+    }
+
+    abstract protected OthersDahaiAction chooseOthersDahaiAction(int actorId, Hai sutehai);
+
+    private void processStartKyoku(JsonNode inputJson) {
+        updateStatusForStartKyoku(inputJson);
         sendNone();
+    }
+
+    protected void updateStatusForStartKyoku(JsonNode inputJson) {
+        KyokuData kyokuData = new KyokuData();
+        kyokuData.oyaId = inputJson.get("oya").asInt();
+        kyokuData.isOya = id == kyokuData.oyaId;
+
+        kyokuData.doras = new ArrayList<Hai>();
+        Hai doraMarker = Hai.parse(inputJson.get("dora_marker").asText());
+        kyokuData.doras.add(doraMarker.next());
+
+        kyokuData.bakaze = Hai.parse(inputJson.get("bakaze").asText());
+        kyokuData.jikaze = Hai.parse(
+                new String[] { "E", "S", "W", "N" }[(id - kyokuData.oyaId + 4) % 4]);
+
+        kyokuData.tehais = new ArrayList<Hai>();
+        JsonNode tehaisJson = inputJson.get("tehais");
+        for (int i = 0; i < INITIAL_TEHAI_SIZE; i++) {
+            kyokuData.tehais.add(Hai.parse(tehaisJson.get(id).get(i).asText()));
+        }
+
+        kyokuData.sutehais = new ArrayList<Hai>();
+        kyokuData.doneRichi = false;
+        kyokuData.numRemainingPipai = INITIAL_NUM_REMAINING_PIPAI;
+
+        this.kyokuData = kyokuData;
     }
 
     protected void processRichi(JsonNode inputJson) {
@@ -184,13 +275,13 @@ public abstract class BaseMjaiClient implements MjaiClient {
         writer.flush();
     }
 
-    protected final void sendNone() {
+    private void sendNone() {
         ObjectNode json = objectMapper.createObjectNode();
         json.put("type", "none");
         sendMessage(json);
     }
 
-    protected final void doTsumoho(Hai tsumohai) {
+    private void doTsumoho(Hai tsumohai) {
         ObjectNode horaMessage = objectMapper.createObjectNode();
         horaMessage.put("type", "hora");
         horaMessage.put("actor", id);
@@ -199,7 +290,7 @@ public abstract class BaseMjaiClient implements MjaiClient {
         sendMessage(horaMessage);
     }
 
-    protected final void doDahai(Hai tsumohai, int sutehaiIndex, boolean doRichi) {
+    private void doDahai(Hai tsumohai, int sutehaiIndex, boolean doRichi) {
         if (doRichi) {
             ObjectNode richiMessage = objectMapper.createObjectNode();
             richiMessage.put("type", "reach");
@@ -207,7 +298,7 @@ public abstract class BaseMjaiClient implements MjaiClient {
             sendMessage(richiMessage);
 
             // Update the internal state.
-            doneRichi = true;
+            kyokuData.doneRichi = true;
 
             // Read the richi message.
             readMessage();
@@ -220,18 +311,27 @@ public abstract class BaseMjaiClient implements MjaiClient {
             dahaiMessage.put("pai", tsumohai.toString());
             dahaiMessage.put("tsumogiri", true);
         } else {
-            dahaiMessage.put("pai", tehais.get(sutehaiIndex).toString());
+            dahaiMessage.put("pai", tehais().get(sutehaiIndex).toString());
             dahaiMessage.put("tsumogiri", false);
         }
         sendMessage(dahaiMessage);
 
         // Update the internal state.
         if (sutehaiIndex >= 0) {
-            tehais.set(sutehaiIndex, tsumohai);
+            tehais().set(sutehaiIndex, tsumohai);
         }
     }
 
-    protected final void doRonho(int targetId, Hai sutehai) {
+    protected boolean canRichi(Hai tsumohai, int sutehaiIndex) {
+        List<Hai> newTehais = new ArrayList<Hai>(tehais());
+        if (sutehaiIndex >= 0) {
+            newTehais.set(sutehaiIndex, tsumohai);
+        }
+        boolean isTenpai = ShantensuUtil.calculateShantensu(newTehais) == 0;
+        return isTenpai && !doneRichi() && !isFuriten() && numRemainingPipai() >= 4 && score > 1000;
+    }
+
+    private void doRonho(int targetId, Hai sutehai) {
         ObjectNode horaMessage = objectMapper.createObjectNode();
         horaMessage.put("type", "hora");
         horaMessage.put("actor", id);
@@ -241,8 +341,8 @@ public abstract class BaseMjaiClient implements MjaiClient {
     }
 
     protected final boolean isFuriten() {
-        for (Hai sutehai : sutehais) {
-            if (HoraUtil.isHoraIgnoreYaku(tehais, sutehai)) {
+        for (Hai sutehai : sutehais()) {
+            if (HoraUtil.isHoraIgnoreYaku(tehais(), sutehai)) {
                 return true;
             }
         }

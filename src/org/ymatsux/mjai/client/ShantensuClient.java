@@ -6,7 +6,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ShantensuClient extends BaseMjaiClient {
+import org.ymatsux.mjai.client.ClientActions.DahaiAction;
+import org.ymatsux.mjai.client.ClientActions.NoneAction;
+import org.ymatsux.mjai.client.ClientActions.OthersDahaiAction;
+import org.ymatsux.mjai.client.ClientActions.SelfTsumoAction;
+import org.ymatsux.mjai.client.ClientActions.TsumohoAction;
+
+public final class ShantensuClient extends BaseMjaiClient {
 
     public ShantensuClient(Socket socket) throws IOException {
         super(socket);
@@ -18,21 +24,20 @@ public class ShantensuClient extends BaseMjaiClient {
     }
 
     @Override
-    protected final void processSelfTsumo(Hai tsumohai) {
-        if (HoraUtil.isHoraIgnoreYaku(tehais, tsumohai)) {
-            doTsumoho(tsumohai);
-            return;
+    protected SelfTsumoAction chooseSelfTsumoAction(Hai tsumohai) {
+        if (HoraUtil.isHoraIgnoreYaku(tehais(), tsumohai)) {
+            return new TsumohoAction();
         }
 
         int sutehaiIndex = chooseSutehai(tsumohai);
-        doDahai(tsumohai, sutehaiIndex, false);
+        return new DahaiAction(sutehaiIndex, false);
     }
 
     private int chooseSutehai(Hai tsumohai) {
-        int shantensu = ShantensuUtil.calculateShantensu(tehais);
+        int shantensu = ShantensuUtil.calculateShantensu(tehais());
         List<Integer> alternatives = new ArrayList<Integer>();
-        for (int i = 0; i < tehais.size(); i++) {
-            List<Hai> trialTehais = new ArrayList<Hai>(tehais);
+        for (int i = 0; i < tehais().size(); i++) {
+            List<Hai> trialTehais = new ArrayList<Hai>(tehais());
             trialTehais.set(i, tsumohai);
             int trialShantensu = ShantensuUtil.calculateShantensu(trialTehais);
             if (trialShantensu < shantensu) {
@@ -49,7 +54,7 @@ public class ShantensuClient extends BaseMjaiClient {
     }
 
     @Override
-    protected final void processOthersDahai(int actorId, Hai sutehai) {
-        sendNone();
+    protected OthersDahaiAction chooseOthersDahaiAction(int actorId, Hai sutehai) {
+        return new NoneAction();
     }
 }
