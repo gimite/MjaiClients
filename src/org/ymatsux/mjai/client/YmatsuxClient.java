@@ -14,7 +14,7 @@ import org.ymatsux.mjai.client.ClientActions.TsumohoAction;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-// Version 0.1.2.2
+// Version 0.1.2.3
 public class YmatsuxClient extends BaseMjaiClient {
 
     // Group kyoku-specific data here.
@@ -134,9 +134,6 @@ public class YmatsuxClient extends BaseMjaiClient {
 
     private double[] calculateRiskVectorForRichiPlayers() {
         double[] riskVector = new double[34];
-        if ("".isEmpty()) {
-            return riskVector;
-        }
         for (int playerId = 0; playerId < 4; playerId++) {
             if (playerId == id) {
                 continue;
@@ -170,7 +167,7 @@ public class YmatsuxClient extends BaseMjaiClient {
             List<Hai> trialTehais = new ArrayList<Hai>(tehais());
             trialTehais.set(i, tsumohai);
             double trialScore = calculateScoreWithYScorer(
-                    trialTehais, tsumohai, shantensu, riskVector);
+                    trialTehais, tehais().get(i), shantensu, riskVector);
             if (trialScore > maxScore) {
                 sutehaiIndex = i;
                 maxScore = trialScore;
@@ -229,6 +226,6 @@ public class YmatsuxClient extends BaseMjaiClient {
 
     @Override
     protected String getClientName() {
-        return "ymatsux-0.1.2.2";
+        return "ymatsux-0.1.2.3";
     }
 }
