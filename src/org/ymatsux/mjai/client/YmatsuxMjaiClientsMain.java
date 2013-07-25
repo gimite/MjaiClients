@@ -10,6 +10,7 @@ public class YmatsuxMjaiClientsMain {
         String clientName = Flags.CLIENT.getValue();
         Socket socket = new Socket(
                 Flags.SERVER.getValue(), Integer.parseInt(Flags.PORT.getValue()));
+        socket.setTcpNoDelay(true);
         MjaiClient client = createClient(clientName, socket);
         client.run();
         socket.close();

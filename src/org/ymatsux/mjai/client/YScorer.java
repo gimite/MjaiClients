@@ -1,12 +1,12 @@
 package org.ymatsux.mjai.client;
 
+import static org.ymatsux.mjai.client.CommonConsts.NUM_HAI_ID;
+import static org.ymatsux.mjai.client.CommonConsts.NUM_MENTSU_ID;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class YScorer {
-
-    private static final int NUM_HAI_ID = 34;
-    private static final int NUM_MENTSU_ID = 55;
 
     private final List<Hai> tehais;
     private final boolean isOya;

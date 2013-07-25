@@ -165,10 +165,14 @@ public abstract class BaseMjaiClient implements MjaiClient {
         int actorId = inputJson.get("actor").asInt();
         if (actorId == id) {
             Hai tsumohai = Hai.parse(inputJson.get("pai").asText());
+            updateStateForSelfTsumo(tsumohai);
             processSelfTsumo(tsumohai);
         } else {
             sendNone();
         }
+    }
+
+    protected void updateStateForSelfTsumo(Hai tsumohai) {
     }
 
     private void processSelfTsumo(Hai tsumohai) {
@@ -251,8 +255,12 @@ public abstract class BaseMjaiClient implements MjaiClient {
         this.kyokuData = kyokuData;
     }
 
-    protected void processRichi(JsonNode inputJson) {
+    private void processRichi(JsonNode inputJson) {
+        updateStatusForRichi(inputJson);
         sendNone();
+    }
+
+    protected void updateStatusForRichi(JsonNode inputJson) {
     }
 
     private void processHora(JsonNode inputJson) {

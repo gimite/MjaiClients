@@ -1,6 +1,5 @@
 package org.ymatsux.mjai.client;
 
-
 public class Mentsu {
 
     private final int mentsuId;

@@ -1,12 +1,13 @@
 package org.ymatsux.mjai.client;
 
+import static org.ymatsux.mjai.client.CommonConsts.NUM_MENTSU_ID;
+
 public class MentsuUtil {
 
     private static final int MANZU_START = 0;
     private static final int PINZU_START = 9;
     private static final int SOZU_START = 18;
 
-    private static final int NUM_MENTSU = 55;
     private static final int MANZU_SHUNTSU_START = 0;
     private static final int PINZU_SHUNTSU_START = 7;
     private static final int SOZU_SHUNTSU_START = 14;
@@ -14,7 +15,7 @@ public class MentsuUtil {
     private static final int[][] MENTSUS;
 
     static {
-        MENTSUS = new int[NUM_MENTSU][3];
+        MENTSUS = new int[NUM_MENTSU_ID][3];
         for (int i = MANZU_SHUNTSU_START; i < PINZU_SHUNTSU_START; i++) {
             MENTSUS[i][0] = i - MANZU_SHUNTSU_START + MANZU_START;
             MENTSUS[i][1] = i - MANZU_SHUNTSU_START + MANZU_START + 1;
@@ -30,7 +31,7 @@ public class MentsuUtil {
             MENTSUS[i][1] = i - SOZU_SHUNTSU_START + SOZU_START + 1;
             MENTSUS[i][2] = i - SOZU_SHUNTSU_START + SOZU_START + 2;
         }
-        for (int i = KOTSU_START; i < NUM_MENTSU; i++) {
+        for (int i = KOTSU_START; i < NUM_MENTSU_ID; i++) {
             MENTSUS[i][0] = MENTSUS[i][1] = MENTSUS[i][2] = i - KOTSU_START;
         }
     }

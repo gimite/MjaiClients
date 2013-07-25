@@ -1,8 +1,11 @@
 package org.ymatsux.mjai.client;
 
+import static org.ymatsux.mjai.client.CommonConsts.NUM_HAI_ID;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.ymatsux.mjai.client.ClientActions.DahaiAction;
@@ -14,13 +17,14 @@ import org.ymatsux.mjai.client.ClientActions.TsumohoAction;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-// Version 0.1.2.3
+// Version 0.1.3
 public class YmatsuxClient extends BaseMjaiClient {
 
     // Group kyoku-specific data here.
     private static class KyokuData {
         private List<Integer>[] playerToAnzenhais;
         private boolean[] playerToDoneRichi;
+        private int[] remainingVector;
     }
 
     private KyokuData kyokuData;
@@ -31,6 +35,10 @@ public class YmatsuxClient extends BaseMjaiClient {
 
     private boolean[] playerToDoneRichi() {
         return kyokuData.playerToDoneRichi;
+    }
+
+    private int[] remainingVector() {
+        return kyokuData.remainingVector;
     }
 
     public YmatsuxClient(Socket socket) throws IOException {
@@ -48,7 +56,21 @@ public class YmatsuxClient extends BaseMjaiClient {
             kyokuData.playerToAnzenhais[playerId] = new ArrayList<Integer>();
         }
         kyokuData.playerToDoneRichi = new boolean[4];
+
+        kyokuData.remainingVector = new int[NUM_HAI_ID];
+        Arrays.fill(kyokuData.remainingVector, 4);
+        Hai doraMarker = Hai.parse(inputJson.get("dora_marker").asText());
+        kyokuData.remainingVector[doraMarker.getId()]--;
+        JsonNode tehaisJson = inputJson.get("tehais");
+        for (int i = 0; i < INITIAL_TEHAI_SIZE; i++) {
+            kyokuData.remainingVector[Hai.parse(tehaisJson.get(id).get(i).asText()).getId()]--;
+        }
         this.kyokuData = kyokuData;
+    }
+
+    @Override
+    protected void updateStateForSelfTsumo(Hai tsumohai) {
+        remainingVector()[tsumohai.getId()]--;
     }
 
     @Override
@@ -133,7 +155,7 @@ public class YmatsuxClient extends BaseMjaiClient {
     private static final double RISK_PENALTY_FOR_RICHI_PLAYERS_KIKENHAI = 8000.0;
 
     private double[] calculateRiskVectorForRichiPlayers() {
-        double[] riskVector = new double[34];
+        double[] riskVector = new double[NUM_HAI_ID];
         for (int playerId = 0; playerId < 4; playerId++) {
             if (playerId == id) {
                 continue;
@@ -141,7 +163,7 @@ public class YmatsuxClient extends BaseMjaiClient {
             if (!playerToDoneRichi()[playerId]) {
                 continue;
             }
-            for (int haiId = 0; haiId < 34; haiId++) {
+            for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
                 if (!playerToAnzenhais()[playerId].contains(haiId)) {
                     riskVector[haiId] += RISK_PENALTY_FOR_RICHI_PLAYERS_KIKENHAI;
                 }
@@ -196,6 +218,8 @@ public class YmatsuxClient extends BaseMjaiClient {
 
     @Override
     protected void updateStateForOthersDahai(int actorId, Hai sutehai) {
+        remainingVector()[sutehai.getId()]--;
+
         playerToAnzenhais()[actorId].add(sutehai.getId());
         for (int playerId = 0; playerId < 4; playerId++) {
             if (playerToDoneRichi()[playerId]) {
@@ -218,14 +242,13 @@ public class YmatsuxClient extends BaseMjaiClient {
     }
 
     @Override
-    protected void processRichi(JsonNode inputJson) {
-        super.processRichi(inputJson);
+    protected void updateStatusForRichi(JsonNode inputJson) {
         int actorId = inputJson.get("actor").asInt();
         playerToDoneRichi()[actorId] = true;
     }
 
     @Override
     protected String getClientName() {
-        return "ymatsux-0.1.2.3";
+        return "ymatsux-0.1.3";
     }
 }
