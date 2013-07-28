@@ -9,6 +9,8 @@ import java.util.List;
 public class YScorer {
 
     private final List<Hai> tehais;
+    private final int[] currentVector;
+    private final int[] remainingVector;
     private final boolean isOya;
     List<Hai> doras;
     private final Hai bakaze;
@@ -16,8 +18,10 @@ public class YScorer {
 
     public YScorer(
             List<Hai> tehais,
-            boolean isOya, List<Hai> doras, Hai bakaze, Hai jikaze) {
+            int[] remainingVector, boolean isOya, List<Hai> doras, Hai bakaze, Hai jikaze) {
         this.tehais = tehais;
+        this.currentVector = HaiUtil.haiListToCountVector(tehais);
+        this.remainingVector = remainingVector;
         this.isOya = isOya;
         this.doras = doras;
         this.bakaze = bakaze;
@@ -30,19 +34,19 @@ public class YScorer {
             countVector[hai.getId()]++;
         }
 
-        return calculateYScoreInternal(
-                countVector, new int[NUM_HAI_ID], 0, 0, 4, maxShantensu);
+        return calculateYScoreInternal(new int[NUM_HAI_ID], 0, 0, 4, maxShantensu);
     }
 
     private double calculateYScoreInternal(
-            int[] currentVector, int[] targetVector,
+            int[] targetVector,
             int indexInMentsuIds, int minMentsuId, int numMentsu, int maxShantensu) {
         if (indexInMentsuIds == numMentsu) {
             double yScore = 0.0;
             // Add janto.
             for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
                 targetVector[haiId] += 2;
-                if (isValidTargetVector(targetVector)) {
+                if (isValidTargetVectorWithinRemainingHais(
+                        targetVector, currentVector, remainingVector)) {
                     int shantensu = calculateShantensuLowerBound(currentVector, targetVector);
                     if (shantensu <= maxShantensu) {
                         yScore += calculateYScoreInternalForFixedTarget(
@@ -58,10 +62,11 @@ public class YScorer {
         for (int mentsuId = minMentsuId; mentsuId < NUM_MENTSU_ID; mentsuId++) {
             MentsuUtil.addMentsu(targetVector, mentsuId);
             int lowerBound = calculateShantensuLowerBound(currentVector, targetVector);
-            if (isValidTargetVector(targetVector) && lowerBound <= maxShantensu) {
+            if (isValidTargetVectorWithinRemainingHais(
+                    targetVector, currentVector, remainingVector) &&
+                    lowerBound <= maxShantensu) {
                 yScore += calculateYScoreInternal(
-                        currentVector, targetVector, indexInMentsuIds + 1, mentsuId, numMentsu,
-                        maxShantensu);
+                        targetVector, indexInMentsuIds + 1, mentsuId, numMentsu, maxShantensu);
             }
             MentsuUtil.removeMentsu(targetVector, mentsuId);
         }
@@ -94,7 +99,21 @@ public class YScorer {
             ScoreCalculator scoreCalculator = new ScoreCalculator(
                     tehais, agarihai, true, true, isOya, doras, bakaze, jikaze);
             double expectedScore = scoreCalculator.calculateScore();
-            yScore += expectedScore * Math.pow(1 / 34.0, shantensu);
+
+            double numCombinationsAsDouble = 1;
+            for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
+                if (targetVector[haiId] - currentVector[haiId] > 0) {
+                    int numRequired = targetVector[haiId] - currentVector[haiId];
+                    int numRemaining = remainingVector[haiId];
+                    if (numRequired > numRemaining) {
+                        throw new IllegalStateException();
+                    }
+                    numCombinationsAsDouble *=
+                            MathUtil.combinationAsDouble(numRemaining, numRequired);
+                }
+            }
+
+            yScore += expectedScore * numCombinationsAsDouble * Math.pow(1.0E-2, shantensu);
         }
 
         return yScore;
@@ -110,9 +129,13 @@ public class YScorer {
         return count - 1;
     }
 
-    private static boolean isValidTargetVector(int[] targetVector) {
+    private static boolean isValidTargetVectorWithinRemainingHais(
+            int[] targetVector, int[] currentVector, int[] remainingVector) {
         for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
             if (targetVector[haiId] > 4) {
+                return false;
+            }
+            if (targetVector[haiId] - currentVector[haiId] > remainingVector[haiId]) {
                 return false;
             }
         }

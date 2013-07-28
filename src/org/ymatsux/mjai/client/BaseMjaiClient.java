@@ -338,6 +338,12 @@ public abstract class BaseMjaiClient implements MjaiClient {
 
         // Update the internal state.
         if (sutehaiIndex >= 0) {
+            sutehais().add(tehais().get(sutehaiIndex));
+        } else {
+            sutehais().add(tsumohai);
+        }
+
+        if (sutehaiIndex >= 0) {
             tehais().set(sutehaiIndex, tsumohai);
         }
     }

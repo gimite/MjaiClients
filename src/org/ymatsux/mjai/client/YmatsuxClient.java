@@ -17,7 +17,7 @@ import org.ymatsux.mjai.client.ClientActions.TsumohoAction;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-// Version 0.1.4
+// Version 0.1.5
 public class YmatsuxClient extends BaseMjaiClient {
 
     // Group kyoku-specific data here.
@@ -252,6 +252,6 @@ public class YmatsuxClient extends BaseMjaiClient {
 
     @Override
     protected String getClientName() {
-        return "ymatsux-0.1.4";
+        return "ymatsux-0.1.5";
     }
 }
