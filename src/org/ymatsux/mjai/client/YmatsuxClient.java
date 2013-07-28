@@ -17,7 +17,7 @@ import org.ymatsux.mjai.client.ClientActions.TsumohoAction;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-// Version 0.1.3
+// Version 0.1.4
 public class YmatsuxClient extends BaseMjaiClient {
 
     // Group kyoku-specific data here.
@@ -86,17 +86,19 @@ public class YmatsuxClient extends BaseMjaiClient {
         if (doneRichi()) {
             return new DahaiAction(-1, false);
         }
-        int shantensu = ShantensuUtil.calculateShantensu(tehais());
-        if (shantensu >= 4) {
-            return chooseDahaiActionByXScorer(tsumohai, shantensu);
+        int shantensuWithRemainingHais =
+                ShantensuUtil.calculateShantensuWithinRemainingHais(tehais(), remainingVector());
+        if (shantensuWithRemainingHais >= 4) {
+            return chooseDahaiActionByXScorer(tsumohai, shantensuWithRemainingHais);
         } else {
-            return chooseDahaiActionByYScorer(tsumohai, shantensu);
+            return chooseDahaiActionByYScorer(tsumohai, shantensuWithRemainingHais);
         }
     }
 
     private double calculateScoreWithXScorer(
             List<Hai> hais, Hai sutehai, int newShantensu, double[] riskVector) {
-        XScorer xScorer = new XScorer(hais, isOya(), doras(), bakaze(), jikaze());
+        XScorer xScorer = new XScorer(
+                hais, remainingVector(), isOya(), doras(), bakaze(), jikaze());
         double xScore = xScorer.calculateXScore(newShantensu);
         double riskPenalty = riskVector[sutehai.getId()];
         return xScore - riskPenalty;
@@ -174,7 +176,8 @@ public class YmatsuxClient extends BaseMjaiClient {
 
     private double calculateScoreWithYScorer(
             List<Hai> hais, Hai sutehai, int currentShantensu, double[] riskVector) {
-        YScorer yScorer = new YScorer(hais, isOya(), doras(), bakaze(), jikaze());
+        YScorer yScorer = new YScorer(
+                hais, remainingVector(), isOya(), doras(), bakaze(), jikaze());
         double yScore = yScorer.calculateYScore(currentShantensu);
         double riskPenalty = currentShantensu >= 2 ? riskVector[sutehai.getId()] : 0;
         return yScore - riskPenalty;
@@ -249,6 +252,6 @@ public class YmatsuxClient extends BaseMjaiClient {
 
     @Override
     protected String getClientName() {
-        return "ymatsux-0.1.3";
+        return "ymatsux-0.1.4";
     }
 }

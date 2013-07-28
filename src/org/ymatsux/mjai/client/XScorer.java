@@ -14,6 +14,8 @@ import java.util.List;
 public class XScorer {
 
     private final List<Hai> tehais;
+    private final int[] currentVector;
+    private final int[] remainingVector;
     private final boolean isOya;
     List<Hai> doras;
     private final Hai bakaze;
@@ -21,8 +23,11 @@ public class XScorer {
 
     public XScorer(
             List<Hai> tehais,
+            int[] remainingVector,
             boolean isOya, List<Hai> doras, Hai bakaze, Hai jikaze) {
         this.tehais = tehais;
+        this.currentVector = HaiUtil.haiListToCountVector(tehais);
+        this.remainingVector = remainingVector;
         this.isOya = isOya;
         this.doras = doras;
         this.bakaze = bakaze;
@@ -36,19 +41,19 @@ public class XScorer {
         }
         int[] mentsuIds = new int[4];
         Arrays.fill(mentsuIds, -1);
-        return calculateXScoreInternal(
-                countVector, new int[NUM_HAI_ID], 0, 0,mentsuIds, shantensu);
+        return calculateXScoreInternal(new int[NUM_HAI_ID], 0, 0,mentsuIds, shantensu);
     }
 
     private double calculateXScoreInternal(
-            int[] currentVector, int[] targetVector,
+            int[] targetVector,
             int indexInMentsuIds, int minMentsuId, int[] mentsuIds, int shantensu) {
         if (indexInMentsuIds == mentsuIds.length) {
             double xScore = 0.0;
             // Add janto.
             for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
                 targetVector[haiId] += 2;
-                if (isValidTargetVector(targetVector)) {
+                if (isValidTargetVectorWithinRemainingHais(
+                        targetVector, currentVector, remainingVector)) {
                     if (calculateShantensuLowerBound(currentVector, targetVector) <= shantensu) {
                         xScore += calculateXScoreInternalForFixedMentsu(
                                 targetVector, mentsuIds, haiId, shantensu);
@@ -64,10 +69,11 @@ public class XScorer {
             MentsuUtil.addMentsu(targetVector, mentsuId);
             mentsuIds[indexInMentsuIds] = mentsuId;
             int lowerBound = calculateShantensuLowerBound(currentVector, targetVector);
-            if (isValidTargetVector(targetVector) && lowerBound <= shantensu) {
+            if (isValidTargetVectorWithinRemainingHais(
+                    targetVector, currentVector, remainingVector) &&
+                    lowerBound <= shantensu) {
                 xScore += calculateXScoreInternal(
-                        currentVector, targetVector, indexInMentsuIds + 1, mentsuId, mentsuIds,
-                        shantensu);
+                        targetVector, indexInMentsuIds + 1, mentsuId, mentsuIds, shantensu);
             }
             MentsuUtil.removeMentsu(targetVector, mentsuId);
             mentsuIds[indexInMentsuIds] = -1;
@@ -85,9 +91,13 @@ public class XScorer {
         return count - 1;
     }
 
-    private static boolean isValidTargetVector(int[] targetVector) {
+    private static boolean isValidTargetVectorWithinRemainingHais(
+            int[] targetVector, int[] currentVector, int[] remainingVector) {
         for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
             if (targetVector[haiId] > 4) {
+                return false;
+            }
+            if (targetVector[haiId] - currentVector[haiId] > remainingVector[haiId]) {
                 return false;
             }
         }
@@ -109,7 +119,20 @@ public class XScorer {
         // Yakuhai
         pseudoFan += countYakuhai(mentsuIds);
 
-        return scoreFromPseudoFan(pseudoFan) * Math.pow(1.0E-2, shantensu);
+        double numCombinationsAsDouble = 1;
+        for (int haiId = 0; haiId < NUM_HAI_ID; haiId++) {
+            if (targetVector[haiId] - currentVector[haiId] > 0) {
+                int numRequired = targetVector[haiId] - currentVector[haiId];
+                int numRemaining = remainingVector[haiId];
+                if (numRequired > numRemaining) {
+                    throw new IllegalStateException();
+                }
+                numCombinationsAsDouble *= MathUtil.combinationAsDouble(numRemaining, numRequired);
+            }
+        }
+
+        return scoreFromPseudoFan(pseudoFan) *
+                numCombinationsAsDouble * Math.pow(1.0E-2, shantensu);
     }
 
     private boolean isTanyao(int[] mentsuIds, int jantoHaiId) {
